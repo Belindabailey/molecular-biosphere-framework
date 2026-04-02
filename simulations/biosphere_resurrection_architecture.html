@@ -1,0 +1,345 @@
+
+<div style="padding: 1rem 0;">
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+    <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem;">
+      <div style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px;">Computational domains</div>
+      <div style="font-size: 18px; font-weight: 500; margin-bottom: 8px;" id="domain-count">8 active domains</div>
+      <input type="range" min="4" max="16" value="8" id="domain-slider" style="width: 100%;" step="1" />
+    </div>
+    <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem;">
+      <div style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 4px;">Time direction</div>
+      <div style="font-size: 18px; font-weight: 500; margin-bottom: 8px;" id="time-display">Forward +1yr</div>
+      <input type="range" min="-50" max="50" value="10" id="time-slider" style="width: 100%;" step="5" />
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+    <div>
+      <div style="border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 1rem;">
+        <div style="font-weight: 500; margin-bottom: 12px;">Biosphere domain architecture</div>
+        <div style="position: relative; height: 280px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); overflow: hidden;">
+          <canvas id="domain-canvas" width="600" height="280"></canvas>
+          <div style="position: absolute; top: 8px; left: 8px; font-size: 11px; color: var(--color-text-secondary);">
+            Each domain = 10³² molecules tracked
+          </div>
+        </div>
+      </div>
+      
+      <div style="border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1rem;">
+        <div style="font-weight: 500; margin-bottom: 12px;">Cluster hierarchy patterns</div>
+        <div style="position: relative; height: 200px;">
+          <canvas id="hierarchy-chart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 1rem;">
+        <div style="font-weight: 500; margin-bottom: 12px;">Molecular cluster sizes</div>
+        <div style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 8px;">Most common stable clusters</div>
+        <div style="margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-secondary); margin-bottom: 2px;">
+            <span>2-3 molecules</span><span>47%</span>
+          </div>
+          <div style="background: var(--color-background-secondary); border-radius: 2px; height: 4px;">
+            <div style="background: var(--color-border-success); height: 4px; border-radius: 2px; width: 47%;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-secondary); margin-bottom: 2px;">
+            <span>4-7 molecules</span><span>32%</span>
+          </div>
+          <div style="background: var(--color-background-secondary); border-radius: 2px; height: 4px;">
+            <div style="background: var(--color-border-info); height: 4px; border-radius: 2px; width: 32%;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-secondary); margin-bottom: 2px;">
+            <span>8-15 molecules</span><span>18%</span>
+          </div>
+          <div style="background: var(--color-background-secondary); border-radius: 2px; height: 4px;">
+            <div style="background: var(--color-border-warning); height: 4px; border-radius: 2px; width: 18%;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-secondary); margin-bottom: 2px;">
+            <span>16+ molecules</span><span>3%</span>
+          </div>
+          <div style="background: var(--color-background-secondary); border-radius: 2px; height: 4px;">
+            <div style="background: var(--color-border-danger); height: 4px; border-radius: 2px; width: 3%;"></div>
+          </div>
+        </div>
+        
+        <div style="background: var(--color-background-info); color: var(--color-text-info); padding: 8px; border-radius: var(--border-radius-md); font-size: 11px; margin-bottom: 12px;">
+          <strong>Sweet spot:</strong> 4-7 molecule clusters optimize stability vs. mobility
+        </div>
+      </div>
+
+      <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1rem; margin-bottom: 1rem;">
+        <div style="font-weight: 500; margin-bottom: 12px;">Life's molecular expectations</div>
+        <div style="font-size: 11px; color: var(--color-text-secondary); margin-bottom: 8px;">Beyond chemical needs</div>
+        <div style="font-size: 12px; margin-bottom: 6px;">
+          <span style="color: var(--color-text-secondary);">Responsibility patterns:</span> <span id="responsibility-score">73%</span>
+        </div>
+        <div style="font-size: 12px; margin-bottom: 6px;">
+          <span style="color: var(--color-text-secondary);">Knowledge storage:</span> <span id="knowledge-score">89%</span>
+        </div>
+        <div style="font-size: 12px; margin-bottom: 6px;">
+          <span style="color: var(--color-text-secondary);">Harmonious bonding:</span> <span id="harmony-score">61%</span>
+        </div>
+        <div style="font-size: 12px; margin-bottom: 12px;">
+          <span style="color: var(--color-text-secondary);">Substrate continuity:</span> <span id="continuity-score">94%</span>
+        </div>
+      </div>
+
+      <div style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 1rem;">
+        <div style="font-weight: 500; margin-bottom: 12px;">Temporal reversibility</div>
+        <div style="font-size: 11px; color: var(--color-text-secondary); margin-bottom: 8px;">Resurrection feasibility</div>
+        <div style="font-size: 10px; font-family: var(--font-mono); background: var(--color-background-secondary); padding: 8px; border-radius: var(--border-radius-md); margin-bottom: 8px;" id="reversibility-formula">
+          P(t) = Π(cluster_states) × Σ(energy_paths) × ∏(life_patterns)
+        </div>
+        <div style="font-size: 11px; color: var(--color-text-secondary); margin-bottom: 8px;">Current accuracy:</div>
+        <div style="font-size: 18px; font-weight: 500; margin-bottom: 8px; color: var(--color-text-success);" id="accuracy-display">87.3%</div>
+        
+        <button onclick="sendPrompt('How would we implement the molecular archaeology for human consciousness reconstruction?')" style="width: 100%; margin-bottom: 6px;">
+          Design consciousness archaeology ↗
+        </button>
+        <button onclick="sendPrompt('What are the fractal patterns in cluster interactions that make this computationally tractable?')" style="width: 100%;">
+          Analyze fractal tractability ↗
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// Simulation state
+let numDomains = 8;
+let timeDirection = 10; // +10 means forward 1 year
+let hierarchyChart;
+
+// Domain types and their characteristics
+const domainTypes = [
+  {name: "Atmospheric", color: "#378ADD", molecules: "N₂/O₂ clusters", pattern: "convection"},
+  {name: "Ocean", color: "#1D9E75", molecules: "H₂O + dissolved", pattern: "currents"},
+  {name: "Soil", color: "#BA7517", molecules: "mineral + organic", pattern: "diffusion"},
+  {name: "Vegetation", color: "#639922", molecules: "cellulose chains", pattern: "photosynthesis"},
+  {name: "Animal", color: "#D4537E", molecules: "protein complexes", pattern: "metabolism"},
+  {name: "Microbial", color: "#7F77DD", molecules: "DNA/RNA clusters", pattern: "reproduction"},
+  {name: "Urban", color: "#888780", molecules: "artificial polymers", pattern: "decay"},
+  {name: "Deep rock", color: "#444441", molecules: "crystal lattices", pattern: "geological"},
+  {name: "Ice", color: "#85B7EB", molecules: "H₂O crystals", pattern: "sublimation"},
+  {name: "Wetlands", color: "#97C459", molecules: "methane bubbles", pattern: "anaerobic"},
+  {name: "Desert", color: "#EF9F27", molecules: "sand particles", pattern: "erosion"},
+  {name: "Volcanic", color: "#E24B4A", molecules: "sulfur compounds", pattern: "outgassing"},
+  {name: "Polar", color: "#B5D4F4", molecules: "ice + CO₂", pattern: "seasonal"},
+  {name: "Stratosphere", color: "#C0DD97", molecules: "ozone clusters", pattern: "photodissociation"},
+  {name: "Deep ocean", color: "#5DCAA5", molecules: "pressure complexes", pattern: "thermal vents"},
+  {name: "Permafrost", color: "#F0997B", molecules: "frozen organics", pattern: "thaw release"}
+];
+
+// Initialize domain canvas
+function initDomainCanvas() {
+  const canvas = document.getElementById('domain-canvas');
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+  
+  ctx.clearRect(0, 0, width, height);
+  
+  // Draw interconnected domains
+  const selectedDomains = domainTypes.slice(0, numDomains);
+  const positions = [];
+  
+  // Calculate domain positions in a network layout
+  for(let i = 0; i < numDomains; i++) {
+    const angle = (i / numDomains) * 2 * Math.PI;
+    const radius = Math.min(width, height) * 0.3;
+    const x = width/2 + Math.cos(angle) * radius + (Math.random() * 40 - 20);
+    const y = height/2 + Math.sin(angle) * radius + (Math.random() * 40 - 20);
+    positions.push({x, y});
+  }
+  
+  // Draw connections between domains
+  ctx.strokeStyle = 'rgba(136, 135, 128, 0.3)';
+  ctx.lineWidth = 1;
+  for(let i = 0; i < numDomains; i++) {
+    for(let j = i + 1; j < numDomains; j++) {
+      const distance = Math.sqrt((positions[i].x - positions[j].x)**2 + (positions[i].y - positions[j].y)**2);
+      if(distance < 150) { // Only draw connections between nearby domains
+        ctx.beginPath();
+        ctx.moveTo(positions[i].x, positions[i].y);
+        ctx.lineTo(positions[j].x, positions[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  
+  // Draw domains
+  selectedDomains.forEach((domain, i) => {
+    const pos = positions[i];
+    const size = 25 + Math.random() * 15;
+    
+    // Domain circle
+    ctx.fillStyle = domain.color;
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, size, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Domain label
+    ctx.fillStyle = 'white';
+    ctx.font = '11px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(domain.name.slice(0, 8), pos.x, pos.y + 3);
+    
+    // Molecular activity indicator
+    const activitySize = 5 + Math.sin(Date.now() * 0.003 + i) * 3;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.beginPath();
+    ctx.arc(pos.x + size * 0.6, pos.y - size * 0.6, activitySize, 0, 2 * Math.PI);
+    ctx.fill();
+  });
+  
+  // Draw time flow indicator
+  drawTimeFlow(ctx, width, height);
+}
+
+function drawTimeFlow(ctx, width, height) {
+  const flowDirection = timeDirection > 0 ? 1 : -1;
+  const flowMagnitude = Math.abs(timeDirection);
+  
+  // Time arrow
+  ctx.strokeStyle = timeDirection > 0 ? '#639922' : '#E24B4A';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  
+  const arrowX = 50;
+  const arrowY = height - 50;
+  const arrowLength = 40 + flowMagnitude * 2;
+  
+  ctx.moveTo(arrowX, arrowY);
+  ctx.lineTo(arrowX + arrowLength * flowDirection, arrowY);
+  
+  // Arrow head
+  ctx.lineTo(arrowX + (arrowLength - 10) * flowDirection, arrowY - 5);
+  ctx.moveTo(arrowX + arrowLength * flowDirection, arrowY);
+  ctx.lineTo(arrowX + (arrowLength - 10) * flowDirection, arrowY + 5);
+  
+  ctx.stroke();
+  
+  // Time label
+  ctx.fillStyle = timeDirection > 0 ? '#639922' : '#E24B4A';
+  ctx.font = '12px sans-serif';
+  ctx.fillText(timeDirection > 0 ? 'Future' : 'Past', arrowX, arrowY - 15);
+  ctx.fillText(`${Math.abs(timeDirection/10).toFixed(1)} years`, arrowX, arrowY + 25);
+}
+
+// Initialize hierarchy chart
+function initHierarchyChart() {
+  const ctx = document.getElementById('hierarchy-chart').getContext('2d');
+  
+  // Data showing cluster size hierarchy
+  const sizes = ['2-3', '4-7', '8-15', '16-31', '32-63', '64+'];
+  const stability = [95, 87, 68, 42, 23, 8]; // Stability decreases with size
+  const interaction = [12, 45, 78, 65, 34, 15]; // Interaction frequency
+  
+  hierarchyChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: sizes,
+      datasets: [
+        {
+          label: 'Stability %',
+          data: stability,
+          borderColor: '#378ADD',
+          backgroundColor: 'rgba(55, 138, 221, 0.1)',
+          tension: 0.3
+        },
+        {
+          label: 'Interaction frequency',
+          data: interaction,
+          borderColor: '#D85A30',
+          backgroundColor: 'rgba(216, 90, 48, 0.1)',
+          tension: 0.3
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { 
+          display: true,
+          position: 'top'
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Cluster size (molecules)' }
+        },
+        y: {
+          title: { display: true, text: 'Percentage' },
+          min: 0,
+          max: 100
+        }
+      }
+    }
+  });
+}
+
+// Update simulation
+function updateSimulation() {
+  numDomains = parseInt(document.getElementById('domain-slider').value);
+  timeDirection = parseInt(document.getElementById('time-slider').value);
+  
+  // Update displays
+  document.getElementById('domain-count').textContent = `${numDomains} active domains`;
+  
+  const years = timeDirection / 10;
+  const direction = timeDirection > 0 ? 'Forward' : 'Backward';
+  document.getElementById('time-display').textContent = `${direction} ${Math.abs(years).toFixed(1)}yr`;
+  
+  // Update life expectation metrics (change over time)
+  const timeEffect = 1 + timeDirection * 0.002;
+  const responsibility = Math.round(73 * timeEffect);
+  const knowledge = Math.round(89 * Math.max(0.2, timeEffect));
+  const harmony = Math.round(61 * timeEffect);
+  const continuity = Math.round(94 * timeEffect);
+  
+  document.getElementById('responsibility-score').textContent = `${Math.max(0, Math.min(100, responsibility))}%`;
+  document.getElementById('knowledge-score').textContent = `${Math.max(0, Math.min(100, knowledge))}%`;
+  document.getElementById('harmony-score').textContent = `${Math.max(0, Math.min(100, harmony))}%`;
+  document.getElementById('continuity-score').textContent = `${Math.max(0, Math.min(100, continuity))}%`;
+  
+  // Update reversibility accuracy
+  const complexityPenalty = (numDomains - 4) * 2; // More domains = harder to reverse
+  const timePenalty = Math.abs(timeDirection) * 0.5; // Further back/forward = less accurate
+  const baseAccuracy = 95;
+  const accuracy = Math.max(20, baseAccuracy - complexityPenalty - timePenalty);
+  
+  document.getElementById('accuracy-display').textContent = `${accuracy.toFixed(1)}%`;
+  
+  // Redraw canvas
+  initDomainCanvas();
+}
+
+// Animation loop
+function animate() {
+  // Periodically update canvas for dynamic effects
+  if(Math.random() < 0.1) {
+    initDomainCanvas();
+  }
+  requestAnimationFrame(animate);
+}
+
+// Set up event listeners
+document.getElementById('domain-slider').addEventListener('input', updateSimulation);
+document.getElementById('time-slider').addEventListener('input', updateSimulation);
+
+// Initialize
+initDomainCanvas();
+initHierarchyChart();
+updateSimulation();
+animate();
+</script>
