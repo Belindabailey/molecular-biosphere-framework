@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Bailey
+    given-names: Belinda
+    orcid: https://orcid.org/0000-0000-0000-0000  # Add your ORCID if you have one
+    affiliation: BioStellar LLC
+title: "Molecular Biosphere Framework: Computational Resurrection Through Atmospheric Constraints"
+version: 1.0.0
+doi: 10.5281/zenodo.XXXXXXX  # Will be assigned later
+date-released: 2026-04-02
+url: "https://github.com/Belindabailey/molecular-biosphere-framework"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Bailey
+      given-names: Belinda
+      affiliation: BioStellar LLC
+  title: "Computational framework for universal organism resurrection through atmospheric constraint validation"
+  journal: "PLOS Computational Biology"
+  year: 2026
+  volume: TBD
+  issue: TBD
+  start: TBD
+  end: TBD
