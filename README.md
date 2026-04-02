@@ -36,7 +36,16 @@ molecular-biosphere-framework/
     ├── implementation.md      # Hardware requirements
     └── ethics.md             # Ethical framework for resurrection
 ```
+## 🎮 Interactive Simulations
 
+Experience the framework through live simulations:
+**[Launch Simulation Interface](simulations/index.html)**
+
+Available simulations:
+- N₂ Brownian Motion Escape Pattern Analysis
+- Biosphere Molecular Archaeology Framework  
+- Tribal Survival Game (Bonus!)
+- 
 ## Computational Requirements
 
 - **Computing**: 10-100 exaflop-years (achievable with 2030 infrastructure)
