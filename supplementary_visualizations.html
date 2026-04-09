@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supplementary Visualizations — Atmospheric Constraint-Based Organism Resurrection</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+:root{--ink:#0a0c10;--paper:#f5f0e8;--cream:#ede6d4;--amber:#c8892a;--amber2:#e8a83c;--teal:#1a6b5c;--teal2:#2a9d7e;--teal3:#5cc4a4;--rust:#c4522e;--blue:#2d6fa8;--gray:#6b6455;--lgray:#b8b0a0;--rule:rgba(10,12,16,0.15);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--paper);color:var(--ink);font-family:'Playfair Display',Georgia,serif;font-size:16px;line-height:1.7;}
+.doc-header{border-bottom:2px solid var(--ink);padding:2.5rem 4rem 1.5rem;position:relative;}
+.doc-header::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(to right,var(--teal),var(--amber),var(--rust));}
+.journal-tag{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gray);margin-bottom:1rem;}
+.doc-title{font-size:clamp(1.4rem,3vw,2.4rem);font-weight:900;line-height:1.1;max-width:800px;margin-bottom:0.5rem;}
+.doc-subtitle{font-size:1rem;font-style:italic;color:var(--gray);margin-bottom:1rem;}
+.doc-meta{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;color:var(--gray);display:flex;gap:2rem;flex-wrap:wrap;}
+#music-player{position:fixed;bottom:1.5rem;right:1.5rem;z-index:1000;background:var(--ink);border:1px solid var(--amber);padding:0.75rem 1.25rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 4px 20px rgba(0,0,0,0.4);}
+#music-player .mp-label{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:0.12em;color:var(--lgray);line-height:1.5;max-width:130px;}
+#music-play-btn{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;background:transparent;border:1px solid var(--amber);color:var(--amber2);padding:0.45rem 1rem;cursor:pointer;white-space:nowrap;transition:background 0.2s,color 0.2s;}
+#music-play-btn:hover{background:var(--amber);color:var(--ink);}
+#music-disc{width:22px;height:22px;border-radius:50%;border:1px solid var(--amber);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+#music-disc.spinning{animation:spin 3s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.toc{background:var(--cream);border:1px solid var(--rule);padding:1rem 4rem;display:flex;gap:0.5rem 1.5rem;flex-wrap:wrap;align-items:center;}
+.toc-label{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gray);}
+.toc-link{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--teal);text-decoration:none;border-bottom:1px solid transparent;transition:border-color 0.2s;}
+.toc-link:hover{border-bottom-color:var(--teal);}
+.page{max-width:1100px;margin:0 auto;padding:0 4rem 8rem;}
+.figure-section{margin:3.5rem 0;padding-top:1.5rem;border-top:1px solid var(--rule);opacity:0;transform:translateY(16px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.figure-section.visible{opacity:1;transform:translateY(0);}
+.figure-label{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--amber);margin-bottom:0.4rem;}
+.figure-title{font-size:clamp(1.1rem,2.2vw,1.7rem);font-weight:700;margin-bottom:0.4rem;line-height:1.2;}
+.figure-caption{font-size:0.85rem;color:var(--gray);font-style:italic;max-width:750px;margin-bottom:1.5rem;line-height:1.6;}
+.analysis-box{background:var(--cream);border-left:3px solid var(--teal);padding:1.25rem 1.5rem;margin:1.5rem 0;}
+.analysis-box h4{font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;}
+.analysis-box p{font-size:0.88rem;color:var(--gray);line-height:1.7;margin-bottom:0.5rem;}
+.analysis-box p:last-child{margin-bottom:0;}
+.prediction-box{background:#fff8f0;border-left:3px solid var(--amber);padding:1.25rem 1.5rem;margin:1.5rem 0;}
+.prediction-box h4{font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber);margin-bottom:0.75rem;}
+.prediction-box ul{margin-left:1.25rem;font-size:0.88rem;color:var(--gray);line-height:1.8;}
+.warning-box{background:#fff5f5;border-left:3px solid var(--rust);padding:1.25rem 1.5rem;margin:1.5rem 0;}
+.warning-box h4{font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--rust);margin-bottom:0.75rem;}
+.warning-box p{font-size:0.88rem;color:var(--gray);line-height:1.7;}
+.viz-box{background:var(--ink);border:1px solid rgba(10,12,16,0.3);position:relative;overflow:hidden;}
+.viz-box canvas{display:block;width:100%;}
+.sim-frame{width:100%;border:1px solid var(--rule);background:var(--ink);overflow:hidden;}
+.sim-frame iframe{width:100%;border:none;display:block;}
+.viz-controls{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;margin-top:0.75rem;}
+.ctrl-btn{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;background:transparent;border:1px solid var(--ink);color:var(--ink);padding:0.4rem 1rem;cursor:pointer;transition:background 0.2s,color 0.2s;}
+.ctrl-btn:hover,.ctrl-btn.active{background:var(--ink);color:var(--paper);}
+.ctrl-btn.teal{border-color:var(--teal);color:var(--teal);}
+.ctrl-btn.teal:hover,.ctrl-btn.teal.active{background:var(--teal);color:white;}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-top:1rem;}
+.stat-box{border:1px solid var(--rule);padding:1rem;background:var(--cream);}
+.stat-val{font-size:1.5rem;font-weight:900;color:var(--teal);line-height:1;margin-bottom:0.2rem;}
+.stat-val.amber{color:var(--amber);}
+.stat-val.rust{color:var(--rust);}
+.stat-label{font-family:'JetBrains Mono',monospace;font-size:0.56rem;letter-spacing:0.08em;color:var(--gray);line-height:1.4;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+.fidelity-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:0.75rem;margin-top:1.5rem;}
+.fidelity-table th{text-align:left;padding:0.75rem 1rem;border-bottom:2px solid var(--ink);font-weight:500;letter-spacing:0.1em;text-transform:uppercase;font-size:0.62rem;}
+.fidelity-table td{padding:0.65rem 1rem;border-bottom:1px solid var(--rule);vertical-align:middle;}
+.fidelity-table tr:hover td{background:var(--cream);}
+.fidelity-bar-wrap{display:flex;align-items:center;gap:0.75rem;}
+.fidelity-bar{height:7px;background:var(--lgray);flex:1;}
+.fidelity-fill{height:100%;transition:width 1.5s cubic-bezier(0.4,0,0.2,1);width:0;}
+.fidelity-fill.ancient{background:var(--teal2);}
+.fidelity-fill.modern{background:var(--amber);}
+.fidelity-pct{font-weight:500;min-width:55px;}
+.pattern-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:1rem;margin:1.5rem 0;}
+.pattern-card{border:1px solid var(--rule);padding:1rem;background:var(--cream);}
+.pattern-card.new{border-color:var(--teal);background:rgba(26,107,92,0.05);}
+.pattern-card.predicted{border-color:var(--amber);border-style:dashed;background:rgba(200,137,42,0.04);}
+.pc-type{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.4rem;}
+.pattern-card.new .pc-type{color:var(--teal);}
+.pattern-card.predicted .pc-type{color:var(--amber);}
+.pc-name{font-weight:700;font-size:0.95rem;margin-bottom:0.3rem;}
+.pc-desc{font-size:0.78rem;color:var(--gray);line-height:1.5;}
+.pull-quote{border-left:4px solid var(--amber);padding:1.25rem 2rem;margin:2.5rem 0;background:var(--cream);}
+.pull-quote p{font-size:1.15rem;font-style:italic;line-height:1.6;margin-bottom:0.4rem;}
+.pull-quote cite{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;color:var(--gray);font-style:normal;}
+footer{border-top:2px solid var(--ink);padding:1.5rem 4rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-left{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;color:var(--gray);}
+.footer-right{font-style:italic;font-size:0.82rem;color:var(--gray);}
+@media(max-width:700px){.page{padding:0 1.5rem 6rem;}.doc-header{padding:1.5rem;}.toc{padding:1rem;}.two-col{grid-template-columns:1fr;}footer{padding:1.5rem;}}
+</style>
+</head>
+<body>
+
+<!-- MUSIC PLAYER: place I_seek_you_in_the_Garden.mp3 in the same folder -->
+<audio id="garden-audio" src="I_seek_you_in_the_Garden.mp3" preload="none"></audio>
+<div id="music-player">
+  <div id="music-disc">
+    <svg viewBox="0 0 10 10" width="10" height="10" fill="none">
+      <circle cx="5" cy="5" r="4" stroke="#c8892a" stroke-width=".8"/>
+      <circle cx="5" cy="5" r="1.2" fill="#c8892a" opacity=".7"/>
+    </svg>
+  </div>
+  <div class="mp-label">I Seek You<br>in the Garden</div>
+  <button id="music-play-btn">&#9654; Play</button>
+</div>
+
+<header class="doc-header">
+  <div class="journal-tag">Supplementary Material S1–S8 &nbsp;·&nbsp; PLOS Computational Biology &nbsp;·&nbsp; Manuscript PCOMPBIOL-D-26-00775</div>
+  <h1 class="doc-title">Atmospheric Constraint-Based Organism Resurrection: Interactive Supplementary Visualizations</h1>
+  <p class="doc-subtitle">Computational demonstrations, pattern analysis, and predictive findings from the molecular biosphere framework — Belinda Bailey · BioStellar LLC · April 2026</p>
+  <div class="doc-meta"><span>Bailey, B. · BioStellar LLC · Duvall, Washington</span><span>April 2026</span><span>github.com/Belindabailey/molecular-biosphere-framework</span></div>
+</header>
+
+<nav class="toc">
+  <span class="toc-label">Figures</span>
+  <a class="toc-link" href="#fig1">S1 · Complexity Reduction</a>
+  <a class="toc-link" href="#fig2">S2 · Eight-Simulator Architecture</a>
+  <a class="toc-link" href="#fig3">S3 · O₂/N₂ Atmospheric Constraint</a>
+  <a class="toc-link" href="#fig4">S4 · N₂ Brownian Escape Simulation</a>
+  <a class="toc-link" href="#fig5">S5 · Molecular Cluster Dynamics</a>
+  <a class="toc-link" href="#fig6">S6 · Pattern Analysis & Predictions</a>
+  <a class="toc-link" href="#fig7">S7 · Reconstruction Fidelity</a>
+  <a class="toc-link" href="#fig8">S8 · Mammoth Proof-of-Concept</a>
+</nav>
+
+<div class="page">
+
+<section class="figure-section" id="fig1">
+  <div class="figure-label">Figure S1</div>
+  <h2 class="figure-title">26-Order-of-Magnitude Complexity Reduction</h2>
+  <p class="figure-caption">Atmospheric O₂/N₂ constraints reduce the resurrection calculation space from 10⁴⁵ (brute-force atomic tracking) to 10¹⁹ — equivalent to the difference between counting every atom in the observable universe versus every grain of sand on Earth. Each additional constraint pattern identified reduces this further by 1–3 orders of magnitude.</p>
+  <div class="viz-box"><canvas id="c-complexity" height="280"></canvas></div>
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-val rust">10⁴⁵</div><div class="stat-label">Brute-force atomic tracking calculations required</div></div>
+    <div class="stat-box"><div class="stat-val">10¹⁹</div><div class="stat-label">With atmospheric constraint validation</div></div>
+    <div class="stat-box"><div class="stat-val amber">10²⁶</div><div class="stat-label">Orders of magnitude reduction — the key innovation</div></div>
+    <div class="stat-box"><div class="stat-val">2030s</div><div class="stat-label">Achievable with projected exaflop infrastructure</div></div>
+  </div>
+</section>
+
+<section class="figure-section" id="fig2">
+  <div class="figure-label">Figure S2</div>
+  <h2 class="figure-title">Eight-Simulator Architecture</h2>
+  <p class="figure-caption">Eight interdependent simulation domains operate simultaneously. ATMOS serves as master constraint validator — any biological activity predicted by other simulators must produce the correct atmospheric O₂/N₂ signature or is rejected as physically impossible.</p>
+  <div class="viz-box"><canvas id="c-arch" height="360"></canvas></div>
+  <div class="viz-controls">
+    <button class="ctrl-btn teal active" onclick="setArchView('flow')" id="btn-flow">Signal Flow</button>
+    <button class="ctrl-btn teal" onclick="setArchView('pulse')" id="btn-pulse">Live Data Pulses</button>
+  </div>
+</section>
+
+<section class="figure-section" id="fig3">
+  <div class="figure-label">Figure S3</div>
+  <h2 class="figure-title">Atmospheric O₂/N₂ as Universal Biological Constraint</h2>
+  <p class="figure-caption">Every breath, every act of photosynthesis, every moment of cellular respiration leaves measurable signatures in atmospheric gas ratios. These signatures follow deterministic stoichiometric equations that collapse the solution space from astronomically large to computationally tractable. Each era's atmospheric fingerprint is distinct and readable.</p>
+  <div class="viz-box"><canvas id="c-atmos" height="300"></canvas></div>
+  <div class="viz-controls">
+    <button class="ctrl-btn amber active" id="btn-modern" onclick="setAtmosMode('modern')">Modern Biosphere</button>
+    <button class="ctrl-btn amber" id="btn-mammoth" onclick="setAtmosMode('mammoth')">28,000 BP Reconstruction</button>
+    <button class="ctrl-btn amber" id="btn-ancient" onclick="setAtmosMode('ancient')">300,000 BP Ancient</button>
+  </div>
+</section>
+
+<section class="figure-section" id="fig4">
+  <div class="figure-label">Figure S4 — Interactive Simulation</div>
+  <h2 class="figure-title">N₂ Brownian Escape Pattern Simulation</h2>
+  <p class="figure-caption">The core computational breakthrough: individual nitrogen molecules appear to move chaotically, but clusters of 4–7 molecules exhibit only 8–12 primary escape vectors and 3–7 typical collision sequences before cluster breakup. Adjust temperature and wind to see how these finite patterns shift — the pattern ceiling holds at every tested condition.</p>
+  <div class="analysis-box">
+    <h4>Key Finding: Finite Escape Vectors</h4>
+    <p>At 65°F with 5mph east wind, N₂ molecules escaping 4–7 molecule clusters use only <strong>8 primary escape directions</strong> with statistical frequencies of 15–35% each. The remaining directions account for less than 5% combined. This is not random — it is physically constrained geometry.</p>
+    <p>Temperature increase shifts the dominant escape vector from south-east (heat-channeling corridor mode) toward uniform distribution (turbulent mixing mode) — but at no tested temperature does the pattern count exceed 12. <em>This ceiling is the fundamental insight enabling the 26-order-of-magnitude reduction.</em></p>
+  </div>
+  <div class="sim-frame"><iframe id="iframe-n2" height="580" scrolling="no"></iframe></div>
+  <div class="analysis-box">
+    <h4>Implication: Single-Atom Precision Resurrection</h4>
+    <p>The finite escape patterns mean a single nitrogen atom's trajectory through a cluster is constrained to one of a small set of outcomes. A molecule entering from the east at low temperature exits south-to-west with ~70% probability. This means tracking one specific atom through millennia of atmospheric cycling is not computationally equivalent to tracking all atoms independently — each atom's path is constrained by cluster physics, reducing per-atom complexity by orders of magnitude.</p>
+    <p>For the most precise mental reconstructions — recovering the exact molecular configuration of specific neurons at the moment of death — this single-atom constraint is the key. Neural architecture is not random; it is encoded in genetics and constrained by developmental biology. Those biological constraints, combined with atmospheric constraint, reduce the reconstruction space from unthinkable to tractable.</p>
+  </div>
+</section>
+
+<section class="figure-section" id="fig5">
+  <div class="figure-label">Figure S5 — Interactive Simulation</div>
+  <h2 class="figure-title">Atmospheric Molecular Cluster Dynamics</h2>
+  <p class="figure-caption">Multi-species atmospheric simulation at realistic abundance ratios (78% N₂, 21% O₂, 1% H₂O, 0.04% CO₂). Detects clusters in real time using proximity-threshold graph traversal, then identifies geometric patterns. <strong>Click anywhere on the canvas to place a tracked atom</strong> — observe its path through molecular clusters. This is the single-atom tracking capability that makes precision resurrection tractable.</p>
+  <div class="sim-frame"><iframe id="iframe-atmos" height="560" scrolling="no"></iframe></div>
+  <div class="analysis-box">
+    <h4>What the Simulation Detects</h4>
+    <p><strong>Clusters:</strong> Groups of 3+ molecules within 25-unit proximity, identified via depth-first graph traversal. Outlined in teal with filled convex hulls.</p>
+    <p><strong>Linear patterns (green dashed lines):</strong> Chains where consecutive angle deviations remain below 0.3 radians — the molecular analog of atmospheric filaments and jet streams.</p>
+    <p><strong>Circular patterns (amber circles):</strong> Groups where each molecule's distance from the centroid stays within 30% of the mean — the molecular analog of vortex structures and convective cells.</p>
+  </div>
+  <div class="warning-box">
+    <h4>The Hardest Molecules to Locate: Upper Atmosphere and Ocean</h4>
+    <p>Molecules that escape into the stratosphere (above 12km, pressure below 0.1 atm) or dissolve into the deep ocean exit the current atmospheric constraint network entirely. In the upper atmosphere, cluster formation becomes vanishingly rare — the escape-pattern constraints that enable the 26-order-of-magnitude reduction no longer apply. Ocean-dissolved molecules enter a dense aquatic constraint network operating on entirely different physical principles. These represent the hardest reconstruction targets: marine organisms, individuals who died at sea, and organisms in coastal environments will require the HYDRO simulator to carry substantially more constraint burden, adding computational complexity above the 10¹⁹ baseline estimate.</p>
+  </div>
+</section>
+
+<section class="figure-section" id="fig6">
+  <div class="figure-label">Figure S6 — Computational Analysis</div>
+  <h2 class="figure-title">Pattern Analysis: Detected, Emerging, and Predicted</h2>
+  <p class="figure-caption">Analysis of the two simulations reveals 5 currently detected pattern classes and an estimated 11 additional pattern classes predictable from the same physics. Each additional class identified reduces the calculation space by an estimated 1–3 further orders of magnitude.</p>
+  <div class="pattern-grid">
+    <div class="pattern-card"><div class="pc-type">✓ Detected — Escape</div><div class="pc-name">Direct Escape</div><div class="pc-desc">1–3 collisions. Temperature-driven. 15–35% frequency. High energy retention.</div></div>
+    <div class="pattern-card"><div class="pc-type">✓ Detected — Escape</div><div class="pc-name">Medium-Bounce Escape</div><div class="pc-desc">4–7 collisions. Most common mode at moderate temperatures. 40–55% frequency.</div></div>
+    <div class="pattern-card"><div class="pc-type">✓ Detected — Escape</div><div class="pc-name">High-Bounce Escape</div><div class="pc-desc">8+ collisions. Cold-temperature dominant. High residence time, high energy retention.</div></div>
+    <div class="pattern-card"><div class="pc-type">✓ Detected — Spatial</div><div class="pc-name">Linear Arrangement</div><div class="pc-desc">Molecular chains with low angular deviation. Atmospheric filament and jet stream analogs.</div></div>
+    <div class="pattern-card"><div class="pc-type">✓ Detected — Spatial</div><div class="pc-name">Circular Arrangement</div><div class="pc-desc">Molecules orbiting a shared centroid within 30% radial variance. Vortex and convective cell analogs.</div></div>
+    <div class="pattern-card new"><div class="pc-type">→ Emerging — Spatial</div><div class="pc-name">Spiral Arrangement</div><div class="pc-desc">Intermediate between linear and circular. Forms when thermal and density gradients are perpendicular. Visible at medium density in S5.</div></div>
+    <div class="pattern-card new"><div class="pc-type">→ Emerging — Spatial</div><div class="pc-name">Mass Stratification Layers</div><div class="pc-desc">CO₂ (mass 44) sinks relative to N₂ (28), H₂O (18) rises. Already encoded in molecule radius; density layer boundaries are detectable.</div></div>
+    <div class="pattern-card new"><div class="pc-type">→ Emerging — Escape</div><div class="pc-name">Bounce-Angle Correlation</div><div class="pc-desc">Exit direction is not independent of entry direction. East-entry molecules at low temperature exit south-west preferentially. Wind bias already computes this implicitly.</div></div>
+    <div class="pattern-card new"><div class="pc-type">→ Emerging — Temporal</div><div class="pc-name">Species Residence Time</div><div class="pc-desc">CO₂ and H₂O linger 3–4× longer than N₂ in clusters due to mass and van der Waals interactions. Predictable from age data already tracked.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">◌ Predicted — Spatial</div><div class="pc-name">Dendritic Branching</div><div class="pc-desc">Linear clusters split at density barriers — molecular analog of river deltas. Detectable as high-aspect-ratio convex hulls with multiple linear sub-segments.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">◌ Predicted — Spatial</div><div class="pc-name">Vortex Pairs</div><div class="pc-desc">Counter-rotating circular clusters at shear boundaries between temperature zones. Already emergent in physics; requires paired-centroid detection logic.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">◌ Predicted — Temporal</div><div class="pc-name">Sequential Cluster Membership</div><div class="pc-desc">A molecule leaving one cluster joins the adjacent cluster with 3–5× higher probability than random. Path dependency traceable from age + cluster ID history.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">◌ Predicted — Temporal</div><div class="pc-name">Trajectory Memory Effects</div><div class="pc-desc">Next-5-frame trajectory is weakly predictable from previous-5-frame trajectory. Trail data already recorded; requires autocorrelation of tracked atom paths.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">◌ Predicted — Escape</div><div class="pc-name">Phase Transition Thresholds</div><div class="pc-desc">At specific temperatures, dominant pattern type flips discontinuously. Already visible in meta-pattern switching; requires threshold detection logic.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">◌ Predicted — Spatial</div><div class="pc-name">Compression Standing Waves</div><div class="pc-desc">Periodic density oscillations from boundary reflection. Bounce logic generates this; detectable via Fourier analysis of density time series.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">◌ Predicted — Spatial</div><div class="pc-name">Exclusion Zones</div><div class="pc-desc">Regions systematically depleted of lighter molecules due to heavier-molecule pressure. Detectable as anomalous composition ratios from abundance data already tracked.</div></div>
+  </div>
+  <div class="prediction-box">
+    <h4>Cumulative Complexity Reduction Estimate</h4>
+    <ul>
+      <li>Current 5 detected patterns → 10²⁶ reduction (established in manuscript)</li>
+      <li>4 emerging patterns (detectable with minor algorithm additions) → estimated additional 4–8 orders of magnitude</li>
+      <li>7 predicted patterns (requiring new detection modules) → estimated additional 7–14 orders of magnitude</li>
+      <li><strong>Total projected reduction with full pattern suite: ~10³⁷–10⁴⁸ — potentially overdetermined, meaning multiple independent constraint lines converge on the same reconstruction</strong></li>
+    </ul>
+  </div>
+</section>
+
+<section class="figure-section" id="fig7">
+  <div class="figure-label">Figure S7</div>
+  <h2 class="figure-title">Predicted Reconstruction Fidelity by Domain</h2>
+  <p class="figure-caption">Fidelity estimates from atmospheric constraint propagation modeling across all eight simulators. Ancient organisms benefit from longer atmospheric record integration. Paradoxically, tightly constrained survival cognition makes Paleolithic personality reconstruction more tractable than modern humans with their vastly larger cognitive state space.</p>
+  <table class="fidelity-table">
+    <thead><tr><th>Reconstruction Domain</th><th>Ancient Organisms (&gt;1,000 BP)</th><th>Modern Organisms</th><th>Primary Constraint</th></tr></thead>
+    <tbody>
+      <tr><td>Physical Form & Morphology</td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill ancient" data-w="96"></div></div><span class="fidelity-pct">96 ± 8%</span></div></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill modern" data-w="89"></div></div><span class="fidelity-pct">89 ± 14%</span></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--gray);">BIOS + eDNA</td></tr>
+      <tr><td>Biochemical Composition</td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill ancient" data-w="94"></div></div><span class="fidelity-pct">94 ± 10%</span></div></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill modern" data-w="85"></div></div><span class="fidelity-pct">85 ± 16%</span></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--gray);">ATMOS O₂/N₂</td></tr>
+      <tr><td>Metabolic Signature</td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill ancient" data-w="97"></div></div><span class="fidelity-pct">97 ± 6%</span></div></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill modern" data-w="91"></div></div><span class="fidelity-pct">91 ± 11%</span></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--gray);">THERMO + HYDRO</td></tr>
+      <tr><td>Neurological Pattern</td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill ancient" data-w="94"></div></div><span class="fidelity-pct">94 ± 12%</span></div></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill modern" data-w="78"></div></div><span class="fidelity-pct">78 ± 22%</span></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--gray);">BIOS + PHOTON</td></tr>
+      <tr><td><strong>Combined Identity Index</strong></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill ancient" data-w="96"></div></div><span class="fidelity-pct"><strong>96–97%</strong></span></div></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill modern" data-w="83"></div></div><span class="fidelity-pct"><strong>82–85%</strong></span></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--gray);">All 8 simulators</td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:0.75rem;display:flex;gap:1.5rem;">
+    <div style="display:flex;align-items:center;gap:0.5rem;"><div style="width:14px;height:7px;background:var(--teal2)"></div><span style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--gray);">Ancient (&gt;1,000 BP)</span></div>
+    <div style="display:flex;align-items:center;gap:0.5rem;"><div style="width:14px;height:7px;background:var(--amber)"></div><span style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--gray);">Modern organisms</span></div>
+  </div>
+</section>
+
+<section class="figure-section" id="fig8">
+  <div class="figure-label">Figure S8</div>
+  <h2 class="figure-title">Woolly Mammoth Proof-of-Concept: 28,000-Year Reconstruction</h2>
+  <p class="figure-caption">Animated demonstration of the reconstruction pipeline applied to Mammuthus primigenius using Siberian permafrost ice core data. Watch all eight simulator layers converge on a crystallizing molecular identity as the fidelity meter climbs.</p>
+  <div class="viz-box"><canvas id="c-mammoth" height="360"></canvas></div>
+  <div class="viz-controls">
+    <button class="ctrl-btn" onclick="resetMammoth()">↺ Restart</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--gray);letter-spacing:0.05em;" id="mammoth-phase-label">Scroll to this section to begin...</span>
+  </div>
+</section>
+
+<div class="pull-quote">
+  <p>"Death is transformation, not termination. The atmospheric memory awaits our computational courage to read its records."</p>
+  <cite>— Bailey, B. (2026). Computational framework for universal organism resurrection. BioStellar LLC.</cite>
+</div>
+
+<section class="figure-section" style="border-top:none;padding-top:0;">
+  <h2 class="figure-title" style="font-size:1.15rem;">Democratic Immortality: Universal Applicability</h2>
+  <p style="color:var(--gray);font-size:0.88rem;max-width:700px;margin-bottom:1.25rem;">Unlike cryopreservation or digital upload approaches requiring prior consent and infrastructure, atmospheric resurrection applies retroactively and universally. Every organism that ever breathed left metabolic records in the atmospheric chemical archive.</p>
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-val">~8.7B</div><div class="stat-label">Humans who ever lived — all potentially recoverable from atmospheric record</div></div>
+    <div class="stat-box"><div class="stat-val amber">5B+ yr</div><div class="stat-label">Years of atmospheric record available for constraint integration</div></div>
+    <div class="stat-box"><div class="stat-val">1,000</div><div class="stat-label">Global monitoring stations needed for proof-of-concept validation</div></div>
+    <div class="stat-box"><div class="stat-val">5–7 yr</div><div class="stat-label">Timeline to first experimental validation with 2030s infrastructure</div></div>
+  </div>
+</section>
+</div>
+
+<footer>
+  <div class="footer-left">Bailey, B. (2026) · BioStellar LLC · Duvall, WA<br>PLOS Computational Biology · Manuscript PCOMPBIOL-D-26-00775<br>github.com/Belindabailey/molecular-biosphere-framework</div>
+  <div class="footer-right">Supplementary Material S1–S8</div>
+</footer>
+
+<script>
+// ── MUSIC PLAYER ──
+window.addEventListener('load', function() {
+  const audio = document.getElementById('garden-audio');
+  const btn = document.getElementById('music-play-btn');
+  const disc = document.getElementById('music-disc');
+  if (!audio||!btn||!disc) return;
+  function setP(p){disc.classList.toggle('spinning',p);btn.textContent=p?'\u25a0 Stop':'\u25b6 Play';}
+  audio.addEventListener('ended',()=>setP(false));
+  btn.addEventListener('click',()=>{
+    if(audio.paused){audio.play().catch(()=>{});setP(true);}
+    else{audio.pause();audio.currentTime=0;setP(false);}
+  });
+});
+
+// ── EMBED SIMULATIONS AS BLOB URLS ──
+window.addEventListener('load', function() {
+  const n2Html = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>N\u2082 Brownian Escape \u2014 BioStellar LLC</title>\n<script src=\"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js\"></script>\n<style>\n@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=JetBrains+Mono:wght@300;400;500&display=swap');\n:root{--ink:#0a0c10;--paper:#f5f0e8;--cream:#ede6d4;--amber:#c8892a;--amber2:#e8a83c;--teal:#1a6b5c;--teal2:#2a9d7e;--teal3:#5cc4a4;--rust:#c4522e;--blue:#2d6fa8;--gray:#6b6455;--lgray:#b8b0a0;}\n*{margin:0;padding:0;box-sizing:border-box;}\nbody{background:var(--ink);color:var(--paper);font-family:'Playfair Display',Georgia,serif;padding:1.5rem;}\nh2{font-size:1.3rem;font-weight:700;margin-bottom:0.25rem;color:var(--paper);}\n.sub{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--lgray);margin-bottom:1.25rem;text-transform:uppercase;}\n.controls{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;}\n.ctrl-card{background:rgba(255,255,255,0.04);border:1px solid rgba(200,137,42,0.2);padding:1rem;}\n.ctrl-card h3{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber);margin-bottom:0.5rem;}\n.ctrl-val{font-size:1.4rem;font-weight:700;color:var(--amber2);margin-bottom:0.75rem;font-family:'JetBrains Mono',monospace;}\ninput[type=range]{width:100%;height:4px;background:rgba(200,137,42,0.2);outline:none;appearance:none;border-radius:2px;}\ninput[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;background:var(--amber);cursor:pointer;}\n.sim-area{display:grid;grid-template-columns:2fr 1fr;gap:1rem;}\n.viz-panel{background:rgba(255,255,255,0.03);border:1px solid rgba(92,196,164,0.15);padding:1rem;}\n.viz-title{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--teal3);margin-bottom:0.75rem;}\ncanvas{display:block;width:100%;background:rgba(10,12,16,0.8);border:1px solid rgba(92,196,164,0.1);}\n#cluster-canvas{height:220px;}\n.chart-wrap{height:200px;margin-top:1rem;}\n.stats-col{display:flex;flex-direction:column;gap:0.75rem;}\n.stat-card{background:rgba(255,255,255,0.04);border:1px solid rgba(92,196,164,0.15);padding:0.875rem;}\n.stat-card h3{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--teal3);margin-bottom:0.6rem;}\n.sr{display:flex;justify-content:space-between;margin-bottom:0.4rem;font-size:0.82rem;}\n.sl{color:var(--lgray);font-family:'JetBrains Mono',monospace;font-size:0.68rem;}\n.sv{color:var(--paper);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:0.68rem;}\n.insight{background:linear-gradient(135deg,rgba(42,157,126,0.15),rgba(26,107,92,0.1));border:1px solid rgba(92,196,164,0.3);padding:0.75rem;margin-top:0.5rem;}\n.insight strong{display:block;margin-bottom:0.25rem;font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--teal3);}\n.insight-text{font-size:0.78rem;color:var(--lgray);}\n.pbar-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem;font-family:'JetBrains Mono',monospace;font-size:0.65rem;}\n.pbar-label{color:var(--lgray);}\n.pbar-pct{color:var(--paper);font-weight:600;}\n.pbar{width:100%;height:5px;background:rgba(255,255,255,0.08);border-radius:2px;margin-bottom:0.5rem;}\n.pfill{height:100%;border-radius:2px;transition:width 0.3s;}\n.pdirect{background:var(--teal2);}\n.pmed{background:var(--amber);}\n.phigh{background:var(--rust);}\n.btn-row{display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;}\n.btn{background:transparent;border:1px solid var(--amber);color:var(--amber2);padding:0.5rem 0.75rem;font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:background 0.2s,color 0.2s;}\n.btn:hover{background:var(--amber);color:var(--ink);}\n</style>\n</head>\n<body>\n<h2>N\u2082 Brownian Motion Escape Pattern Simulation</h2>\n<div class=\"sub\">BioStellar LLC \u00b7 Interactive molecular cluster dynamics</div>\n<div class=\"controls\">\n  <div class=\"ctrl-card\">\n    <h3>Temperature Control</h3>\n    <div class=\"ctrl-val\" id=\"temp-display\">65\u00b0F (291K)</div>\n    <input type=\"range\" min=\"32\" max=\"100\" value=\"65\" id=\"temp-slider\" step=\"1\"/>\n  </div>\n  <div class=\"ctrl-card\">\n    <h3>Wind Bias</h3>\n    <div class=\"ctrl-val\" id=\"wind-display\">5 mph E</div>\n    <input type=\"range\" min=\"0\" max=\"20\" value=\"5\" id=\"wind-slider\" step=\"1\"/>\n  </div>\n</div>\n<div class=\"sim-area\">\n  <div class=\"viz-panel\">\n    <div class=\"viz-title\">Molecular Cluster \u2014 Escape Trajectory</div>\n    <canvas id=\"cluster-canvas\" width=\"500\" height=\"220\"></canvas>\n    <div class=\"viz-title\" style=\"margin-top:1rem;\">Exit Probability by Angle</div>\n    <div class=\"chart-wrap\"><canvas id=\"trajectory-chart\"></canvas></div>\n  </div>\n  <div class=\"stats-col\">\n    <div class=\"stat-card\">\n      <h3>Current Simulation</h3>\n      <div class=\"sr\"><span class=\"sl\">Bounces:</span><span class=\"sv\" id=\"bounce-count\">4-7</span></div>\n      <div class=\"sr\"><span class=\"sl\">Exit angle:</span><span class=\"sv\" id=\"exit-angle\">NE-up</span></div>\n      <div class=\"sr\"><span class=\"sl\">Time:</span><span class=\"sv\" id=\"residence-time\">3.2ps</span></div>\n      <div class=\"sr\"><span class=\"sl\">Energy:</span><span class=\"sv\" id=\"energy-retained\">87%</span></div>\n      <div class=\"insight\">\n        <strong>Pattern Recognized</strong>\n        <div class=\"insight-text\" id=\"meta-pattern\">Heat channeling through low-density corridors</div>\n      </div>\n    </div>\n    <div class=\"stat-card\">\n      <h3>Pattern Frequency</h3>\n      <div class=\"pbar-row\"><span class=\"pbar-label\">Direct escape</span><span class=\"pbar-pct\" id=\"direct-pct\">23%</span></div>\n      <div class=\"pbar\"><div class=\"pfill pdirect\" style=\"width:23%\" id=\"direct-bar\"></div></div>\n      <div class=\"pbar-row\"><span class=\"pbar-label\">3\u20135 bounces</span><span class=\"pbar-pct\" id=\"med-pct\">45%</span></div>\n      <div class=\"pbar\"><div class=\"pfill pmed\" style=\"width:45%\" id=\"med-bar\"></div></div>\n      <div class=\"pbar-row\"><span class=\"pbar-label\">6+ bounces</span><span class=\"pbar-pct\" id=\"high-pct\">32%</span></div>\n      <div class=\"pbar\"><div class=\"pfill phigh\" style=\"width:32%\" id=\"high-bar\"></div></div>\n    </div>\n    <div class=\"stat-card\">\n      <h3>Atmospheric Predictions</h3>\n      <div class=\"sr\"><span class=\"sl\">Molecules/m\u00b3:</span><span class=\"sv\">2.7\u00d710\u00b2\u00b2</span></div>\n      <div class=\"sr\"><span class=\"sl\">Escape/sec:</span><span class=\"sv\" id=\"escape-rate\">8.1\u00d710\u00b2\u2070</span></div>\n      <div class=\"sr\"><span class=\"sl\">Flow bias:</span><span class=\"sv\" id=\"flow-bias\">East 2.3 m/s</span></div>\n      <div class=\"btn-row\">\n        <button class=\"btn\" onclick=\"runNewSimulation()\">\u21ba New Simulation</button>\n        <button class=\"btn\" onclick=\"exportData()\">\u2193 Export Data</button>\n      </div>\n    </div>\n  </div>\n</div>\n<script>\nlet currentTemp=65,currentWind=5,trajectoryChart,animationId;\n\nfunction initClusterCanvas(){\n  const canvas=document.getElementById('cluster-canvas');\n  const ctx=canvas.getContext('2d');\n  const W=canvas.width,H=canvas.height;\n  ctx.clearRect(0,0,W,H);\n  ctx.fillStyle='rgba(10,12,16,0.95)';ctx.fillRect(0,0,W,H);\n  // Grid\n  ctx.strokeStyle='rgba(42,157,126,0.06)';ctx.lineWidth=0.5;\n  for(let x=0;x<W;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}\n  for(let y=0;y<H;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}\n  const clusters=[\n    {x:250,y:110,z:0,type:'center'},\n    {x:170,y:70,z:-20,type:'static'},{x:330,y:70,z:-20,type:'static'},\n    {x:170,y:150,z:-20,type:'static'},{x:330,y:150,z:-20,type:'static'},\n    {x:250,y:50,z:15,type:'static'},{x:250,y:170,z:15,type:'static'},\n    {x:200,y:110,z:25,type:'static'},{x:300,y:110,z:25,type:'static'},\n  ];\n  clusters.forEach(cl=>{\n    const sz=cl.type==='center'?10:7;\n    const alpha=cl.z<0?0.5:1.0;\n    const color=cl.type==='center'?`rgba(42,157,126,${alpha})`:`rgba(107,100,85,${alpha})`;\n    ctx.fillStyle=color;\n    ctx.beginPath();ctx.arc(cl.x,cl.y,sz,0,Math.PI*2);ctx.fill();\n    if(cl.type==='center'){\n      ctx.strokeStyle='rgba(92,196,164,0.4)';ctx.lineWidth=1.5;\n      ctx.beginPath();ctx.arc(cl.x,cl.y,sz+5,0,Math.PI*2);ctx.stroke();\n    }\n    for(let i=0;i<4;i++){\n      const a=(i/4)*Math.PI*2;\n      const mx=cl.x+Math.cos(a)*(sz+5),my=cl.y+Math.sin(a)*(sz+5);\n      const mc=cl.type==='center'&&i===0?`rgba(200,137,42,${alpha})`:`rgba(184,176,160,${alpha*0.7})`;\n      ctx.fillStyle=mc;ctx.beginPath();ctx.arc(mx,my,2.5,0,Math.PI*2);ctx.fill();\n    }\n  });\n  drawTrajectory(ctx);\n}\n\nfunction drawTrajectory(ctx){\n  const temp=currentTemp,windBias=currentWind;\n  const startX=250+Math.cos(0)*15,startY=110+Math.sin(0)*15;\n  const numBounces=Math.max(3,Math.round(8-(temp-32)*0.05));\n  const points=[{x:startX,y:startY}];\n  let x=startX,y=startY;\n  for(let i=0;i<numBounces;i++){\n    const angle=Math.random()*2*Math.PI+(windBias*0.1);\n    const distance=25+Math.random()*20;\n    x+=Math.cos(angle)*distance;y+=Math.sin(angle)*distance;\n    x=Math.max(20,Math.min(480,x));y=Math.max(20,Math.min(200,y));\n    points.push({x,y});\n  }\n  const escapeAngle=Math.random()*2*Math.PI+(windBias*0.2);\n  const escapeX=x+Math.cos(escapeAngle)*55,escapeY=y+Math.sin(escapeAngle)*55;\n  points.push({x:escapeX,y:escapeY});\n  ctx.shadowColor='rgba(200,137,42,0.5)';ctx.shadowBlur=8;\n  ctx.strokeStyle='#e8a83c';ctx.lineWidth=2.5;ctx.setLineDash([5,3]);\n  ctx.beginPath();ctx.moveTo(points[0].x,points[0].y);\n  points.slice(1).forEach(p=>ctx.lineTo(p.x,p.y));ctx.stroke();\n  ctx.shadowBlur=0;ctx.setLineDash([]);\n  points.slice(1,-1).forEach((p,i)=>{\n    ctx.fillStyle='#c8892a';ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fill();\n    ctx.fillStyle='rgba(232,168,60,0.8)';ctx.font='10px \"JetBrains Mono\"';\n    ctx.fillText((i+1).toString(),p.x+7,p.y-6);\n  });\n  // Final escape arrow\n  ctx.strokeStyle='rgba(92,196,164,0.8)';ctx.lineWidth=2;\n  ctx.beginPath();ctx.moveTo(points[points.length-2].x,points[points.length-2].y);\n  ctx.lineTo(escapeX,escapeY);ctx.stroke();\n  ctx.fillStyle='rgba(92,196,164,0.9)';ctx.font='9px \"JetBrains Mono\"';\n  ctx.fillText('escape \u2192',escapeX+4,escapeY-4);\n  return{bounces:numBounces,exitAngle:Math.atan2(escapeY-y,escapeX-x)};\n}\n\nfunction initTrajectoryChart(){\n  const ctx2=document.getElementById('trajectory-chart').getContext('2d');\n  const data=[];\n  for(let angle=0;angle<360;angle+=15){\n    const radians=(angle*Math.PI)/180;\n    const baseProb=0.8+(currentTemp-32)*0.003;\n    const windEffect=Math.cos(radians-(currentWind*0.1))*0.3;\n    const probability=Math.max(0.1,Math.min(1.0,baseProb+windEffect+(Math.random()*0.15-0.075)));\n    data.push({angle,probability});\n  }\n  if(trajectoryChart)trajectoryChart.destroy();\n  trajectoryChart=new Chart(ctx2,{\n    type:'line',\n    data:{\n      labels:data.map(d=>d.angle+'\u00b0'),\n      datasets:[{\n        label:'Exit probability',\n        data:data.map(d=>d.probability),\n        borderColor:'#2a9d7e',\n        backgroundColor:'rgba(42,157,126,0.08)',\n        tension:0.4,fill:true,pointRadius:2,pointBackgroundColor:'#5cc4a4'\n      }]\n    },\n    options:{\n      responsive:true,maintainAspectRatio:false,\n      plugins:{legend:{display:false}},\n      scales:{\n        x:{ticks:{color:'#6b6455',font:{family:'JetBrains Mono',size:9}},grid:{color:'rgba(107,100,85,0.15)'},title:{display:true,text:'Exit angle (degrees)',color:'#6b6455',font:{family:'JetBrains Mono',size:9}}},\n        y:{ticks:{color:'#6b6455',font:{family:'JetBrains Mono',size:9}},grid:{color:'rgba(107,100,85,0.15)'},min:0,max:1,title:{display:true,text:'Probability',color:'#6b6455',font:{family:'JetBrains Mono',size:9}}}\n      }\n    }\n  });\n}\n\nfunction updateSimulation(){\n  const tempF=parseInt(document.getElementById('temp-slider').value);\n  const tempK=Math.round((tempF-32)*5/9+273.15);\n  const wind=parseInt(document.getElementById('wind-slider').value);\n  currentTemp=tempF;currentWind=wind;\n  document.getElementById('temp-display').textContent=`${tempF}\u00b0F (${tempK}K)`;\n  document.getElementById('wind-display').textContent=`${wind} mph E`;\n  const bounceCount=Math.max(3,Math.round(8-(tempF-32)*0.05));\n  const residenceTime=(bounceCount*0.8).toFixed(1);\n  const energyRetained=Math.round(95-bounceCount*1.5);\n  document.getElementById('bounce-count').textContent=`${bounceCount}-${bounceCount+3}`;\n  document.getElementById('residence-time').textContent=`${residenceTime}ps`;\n  document.getElementById('energy-retained').textContent=`${energyRetained}%`;\n  const angles=['N','NE','E','SE','S','SW','W','NW'];\n  const direction=wind>10?'E-up':angles[Math.floor(Math.random()*8)]+(Math.random()>0.5?'-up':'');\n  document.getElementById('exit-angle').textContent=direction;\n  const directEscape=Math.round(15+(tempF-32)*0.3+wind*0.5);\n  const medBounce=Math.round(50-(tempF-32)*0.1);\n  const highBounce=100-directEscape-medBounce;\n  document.getElementById('direct-pct').textContent=`${directEscape}%`;\n  document.getElementById('med-pct').textContent=`${medBounce}%`;\n  document.getElementById('high-pct').textContent=`${highBounce}%`;\n  document.getElementById('direct-bar').style.width=`${directEscape}%`;\n  document.getElementById('med-bar').style.width=`${medBounce}%`;\n  document.getElementById('high-bar').style.width=`${highBounce}%`;\n  let meta='Random molecular motion';\n  if(tempF<50)meta='Heat channeling through low-density corridors';\n  else if(tempF>80)meta='Uniform turbulent mixing';\n  else meta='Convective cell formation';\n  document.getElementById('meta-pattern').textContent=meta;\n  const tempKCalc=(tempF-32)*5/9+273.15;\n  document.getElementById('escape-rate').textContent=(8.1*(tempKCalc/291)**1.5).toFixed(1)+'\u00d710\u00b2\u2070';\n  document.getElementById('flow-bias').textContent=`East ${(wind*0.46).toFixed(1)} m/s`;\n  initClusterCanvas();\n  if(trajectoryChart)updateTrajectoryChart();\n}\n\nfunction updateTrajectoryChart(){\n  const data=[];\n  for(let angle=0;angle<360;angle+=15){\n    const radians=(angle*Math.PI)/180;\n    const baseProb=0.8+(currentTemp-32)*0.003;\n    const windEffect=Math.cos(radians-(currentWind*0.1))*0.3;\n    data.push(Math.max(0.1,Math.min(1.0,baseProb+windEffect+(Math.random()*0.15-0.075))));\n  }\n  trajectoryChart.data.datasets[0].data=data;\n  trajectoryChart.update('none');\n}\n\nfunction runNewSimulation(){\n  const newTemp=Math.round(currentTemp+(Math.random()*10-5));\n  const newWind=Math.max(0,Math.round(currentWind+(Math.random()*4-2)));\n  document.getElementById('temp-slider').value=Math.max(32,Math.min(100,newTemp));\n  document.getElementById('wind-slider').value=Math.min(20,newWind);\n  updateSimulation();\n}\n\nfunction exportData(){\n  const data={timestamp:new Date().toISOString(),temperature_F:currentTemp,wind_mph:currentWind,bounce_count:document.getElementById('bounce-count').textContent,residence_time:document.getElementById('residence-time').textContent,energy_retained:document.getElementById('energy-retained').textContent,exit_angle:document.getElementById('exit-angle').textContent,direct_escape_pct:document.getElementById('direct-pct').textContent,medium_bounce_pct:document.getElementById('med-pct').textContent,high_bounce_pct:document.getElementById('high-pct').textContent,meta_pattern:document.getElementById('meta-pattern').textContent,escape_rate:document.getElementById('escape-rate').textContent,flow_bias:document.getElementById('flow-bias').textContent};\n  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});\n  const link=document.createElement('a');link.href=URL.createObjectURL(blob);\n  link.download=`n2_escape_data_${new Date().toISOString().slice(0,10)}.json`;link.click();\n}\n\ndocument.getElementById('temp-slider').addEventListener('input',updateSimulation);\ndocument.getElementById('wind-slider').addEventListener('input',updateSimulation);\ndocument.addEventListener('DOMContentLoaded',function(){initClusterCanvas();initTrajectoryChart();});\nwindow.addEventListener('load',function(){initClusterCanvas();if(!trajectoryChart)initTrajectoryChart();});\n</script>\n</body>\n</html>\n";
+  const atmosHtml = "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Atmospheric Molecular Cluster Dynamics \u2014 BioStellar LLC</title>\n<style>\n@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=JetBrains+Mono:wght@300;400;500&display=swap');\n:root{--ink:#0a0c10;--paper:#f5f0e8;--cream:#ede6d4;--amber:#c8892a;--amber2:#e8a83c;--teal:#1a6b5c;--teal2:#2a9d7e;--teal3:#5cc4a4;--rust:#c4522e;--blue:#2d6fa8;--gray:#6b6455;--lgray:#b8b0a0;}\n*{margin:0;padding:0;box-sizing:border-box;}\nbody{background:var(--ink);color:var(--paper);font-family:'Playfair Display',Georgia,serif;padding:1.25rem;}\nh2{font-size:1.3rem;font-weight:700;margin-bottom:0.2rem;}\n.sub{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--lgray);margin-bottom:1rem;text-transform:uppercase;}\n#controls{display:flex;align-items:center;gap:1rem;margin-bottom:0.75rem;flex-wrap:wrap;}\nlabel{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;color:var(--lgray);text-transform:uppercase;}\ninput[type=range]{flex:1;min-width:100px;height:4px;background:rgba(200,137,42,0.2);outline:none;appearance:none;border-radius:2px;}\ninput[type=range]::-webkit-slider-thumb{appearance:none;width:14px;height:14px;border-radius:50%;background:var(--amber);cursor:pointer;}\nspan.val{font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--amber2);min-width:48px;}\nbutton{padding:0.4rem 0.9rem;background:transparent;border:1px solid var(--amber);color:var(--amber2);border-radius:0;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;transition:background 0.2s,color 0.2s;}\nbutton:hover{background:var(--amber);color:var(--ink);}\n.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0.75rem;margin-bottom:0.75rem;}\n.stat-card{background:rgba(255,255,255,0.04);border:1px solid rgba(92,196,164,0.18);padding:0.75rem;text-align:center;}\n.stat-value{font-size:1.2rem;font-weight:700;margin-bottom:0.2rem;font-family:'JetBrains Mono',monospace;color:var(--amber2);}\n.stat-label{font-size:0.6rem;color:var(--lgray);font-family:'JetBrains Mono',monospace;letter-spacing:0.08em;}\n#canvas{border:1px solid rgba(92,196,164,0.15);border-radius:0;cursor:crosshair;display:block;width:100%;}\n.legend{display:flex;gap:1.25rem;margin-top:0.75rem;font-family:'JetBrains Mono',monospace;font-size:0.62rem;flex-wrap:wrap;}\n.legend-item{display:flex;align-items:center;gap:5px;color:var(--lgray);}\n.legend-color{width:10px;height:10px;border-radius:50%;flex-shrink:0;}\n.track-hint{font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:rgba(92,196,164,0.55);margin-top:0.4rem;letter-spacing:0.08em;}\n</style>\n</head>\n<body>\n<h2>Atmospheric Molecular Cluster Dynamics</h2>\n<div class=\"sub\">BioStellar LLC \u00b7 Click canvas to track individual atoms \u00b7 O\u2082 \u00b7 N\u2082 \u00b7 CO\u2082 \u00b7 H\u2082O</div>\n<div id=\"controls\">\n  <label>Temperature</label>\n  <input type=\"range\" id=\"tempSlider\" min=\"0\" max=\"100\" value=\"50\">\n  <span class=\"val\" id=\"tempValue\">25\u00b0C</span>\n  <label>Air Density</label>\n  <input type=\"range\" id=\"densitySlider\" min=\"1\" max=\"10\" value=\"5\">\n  <span class=\"val\" id=\"densityValue\">50%</span>\n  <button onclick=\"resetSimulation()\">Reset</button>\n  <button onclick=\"togglePause()\" id=\"pauseBtn\">Pause</button>\n  <button onclick=\"addTrackedAtom()\">Track Atom \u2197</button>\n</div>\n<div class=\"stats\">\n  <div class=\"stat-card\"><div class=\"stat-value\" id=\"totalMolecules\">0</div><div class=\"stat-label\">Total molecules</div></div>\n  <div class=\"stat-card\"><div class=\"stat-value\" id=\"clustersFound\">0</div><div class=\"stat-label\">Clusters detected</div></div>\n  <div class=\"stat-card\"><div class=\"stat-value\" id=\"patternsFound\">0</div><div class=\"stat-label\">Patterns identified</div></div>\n  <div class=\"stat-card\"><div class=\"stat-value\" id=\"avgSpeed\">0.0</div><div class=\"stat-label\">Avg speed (px/frame)</div></div>\n</div>\n<canvas id=\"canvas\" width=\"800\" height=\"440\"></canvas>\n<div class=\"legend\">\n  <div class=\"legend-item\"><div class=\"legend-color\" style=\"background:#2d6fa8\"></div><span>O\u2082 molecules</span></div>\n  <div class=\"legend-item\"><div class=\"legend-color\" style=\"background:#2a9d7e\"></div><span>N\u2082 molecules</span></div>\n  <div class=\"legend-item\"><div class=\"legend-color\" style=\"background:#c8892a\"></div><span>CO\u2082 molecules</span></div>\n  <div class=\"legend-item\"><div class=\"legend-color\" style=\"background:#c4522e\"></div><span>H\u2082O molecules</span></div>\n  <div class=\"legend-item\"><div class=\"legend-color\" style=\"background:#9C27B0\"></div><span>Tracked atom</span></div>\n  <div class=\"legend-item\"><div class=\"legend-color\" style=\"background:rgba(92,196,164,0.2);border:1px solid #5cc4a4\"></div><span>Detected cluster</span></div>\n</div>\n<div class=\"track-hint\">\u2191 Click anywhere on the canvas to place a tracked atom and observe its path through molecular clusters</div>\n<script>\nconst canvas=document.getElementById('canvas');\nconst ctx=canvas.getContext('2d');\nlet molecules=[],clusters=[],patterns=[],trackedAtoms=[],animationId,isPaused=false;\nconst moleculeTypes=[\n  {type:'O2',color:'#2d6fa8',mass:32,abundance:0.21},\n  {type:'N2',color:'#2a9d7e',mass:28,abundance:0.78},\n  {type:'CO2',color:'#c8892a',mass:44,abundance:0.0004},\n  {type:'H2O',color:'#c4522e',mass:18,abundance:0.01}\n];\nclass Molecule{\n  constructor(x,y,type){this.x=x;this.y=y;this.vx=(Math.random()-0.5)*2;this.vy=(Math.random()-0.5)*2;this.type=type;this.radius=Math.sqrt(type.mass)/3;this.clusterId=null;this.age=0;}\n  update(temperature,density){\n    this.age++;\n    const tf=temperature/50,bf=0.1*tf;\n    this.vx+=(Math.random()-0.5)*bf;this.vy+=(Math.random()-0.5)*bf;\n    this.vx*=0.99;this.vy*=0.99;\n    this.x+=this.vx*tf;this.y+=this.vy*tf;\n    if(this.x<0||this.x>canvas.width)this.vx*=-0.8;\n    if(this.y<0||this.y>canvas.height)this.vy*=-0.8;\n    this.x=Math.max(0,Math.min(canvas.width,this.x));\n    this.y=Math.max(0,Math.min(canvas.height,this.y));\n  }\n  draw(ctx){\n    ctx.fillStyle=this.clusterId!==null?this.type.color+'cc':this.type.color;\n    ctx.beginPath();ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);ctx.fill();\n    if(this.clusterId!==null){ctx.strokeStyle='rgba(92,196,164,0.4)';ctx.lineWidth=0.8;ctx.stroke();}\n  }\n}\nclass TrackedAtom{\n  constructor(x,y){this.x=x;this.y=y;this.trail=[{x,y}];this.vx=(Math.random()-0.5)*3;this.vy=(Math.random()-0.5)*3;this.radius=4;this.age=0;}\n  update(temperature){\n    this.age++;const tf=temperature/50,bf=0.15*tf;\n    this.vx+=(Math.random()-0.5)*bf;this.vy+=(Math.random()-0.5)*bf;\n    molecules.forEach(mol=>{\n      const dx=mol.x-this.x,dy=mol.y-this.y,dist=Math.sqrt(dx*dx+dy*dy);\n      if(dist<20){const force=0.02*tf/(dist+1);this.vx+=dx*force;this.vy+=dy*force;}\n    });\n    this.vx*=0.98;this.vy*=0.98;\n    this.x+=this.vx*tf;this.y+=this.vy*tf;\n    if(this.x<0||this.x>canvas.width)this.vx*=-0.7;\n    if(this.y<0||this.y>canvas.height)this.vy*=-0.7;\n    this.x=Math.max(0,Math.min(canvas.width,this.x));\n    this.y=Math.max(0,Math.min(canvas.height,this.y));\n    this.trail.push({x:this.x,y:this.y});\n    if(this.trail.length>100)this.trail.shift();\n  }\n  draw(ctx){\n    if(this.trail.length>1){\n      for(let i=1;i<this.trail.length;i++){\n        const alpha=(i/this.trail.length)*0.5;\n        ctx.strokeStyle=`rgba(232,168,60,${alpha})`;ctx.lineWidth=1.5;\n        ctx.beginPath();ctx.moveTo(this.trail[i-1].x,this.trail[i-1].y);ctx.lineTo(this.trail[i].x,this.trail[i].y);ctx.stroke();\n      }\n    }\n    ctx.fillStyle='#9C27B0';ctx.strokeStyle='rgba(232,168,60,0.8)';ctx.lineWidth=2;\n    ctx.beginPath();ctx.arc(this.x,this.y,this.radius,0,Math.PI*2);ctx.fill();ctx.stroke();\n    ctx.fillStyle='rgba(232,168,60,0.9)';ctx.font='bold 9px \"JetBrains Mono\"';\n    ctx.fillText(`${Math.floor(this.age/60)}s`,this.x+6,this.y-6);\n  }\n}\nfunction initializeMolecules(density){\n  molecules=[];\n  const num=Math.floor(density*80);\n  for(let i=0;i<num;i++){\n    const x=Math.random()*canvas.width,y=Math.random()*canvas.height;\n    let rand=Math.random(),sel=moleculeTypes[0];\n    for(const t of moleculeTypes){if(rand<t.abundance){sel=t;break;}rand-=t.abundance;}\n    molecules.push(new Molecule(x,y,sel));\n  }\n}\nfunction detectClusters(){\n  clusters=[];const visited=new Set();const threshold=25;\n  molecules.forEach((mol,i)=>{\n    if(visited.has(i))return;\n    const cluster=[],stack=[i];\n    while(stack.length>0){\n      const ci=stack.pop();if(visited.has(ci))continue;\n      visited.add(ci);const cm=molecules[ci];cluster.push(cm);\n      molecules.forEach((om,j)=>{\n        if(visited.has(j))return;\n        const dx=cm.x-om.x,dy=cm.y-om.y;\n        if(Math.sqrt(dx*dx+dy*dy)<threshold)stack.push(j);\n      });\n    }\n    if(cluster.length>=3){clusters.push(cluster);cluster.forEach(m=>m.clusterId=clusters.length-1);}\n  });\n}\nfunction detectPatterns(){\n  patterns=[];\n  clusters.forEach(cluster=>{\n    if(cluster.length>=4){\n      let ls=0;\n      for(let i=2;i<cluster.length;i++){\n        const a1=Math.atan2(cluster[i-1].y-cluster[i-2].y,cluster[i-1].x-cluster[i-2].x);\n        const a2=Math.atan2(cluster[i].y-cluster[i-1].y,cluster[i].x-cluster[i-1].x);\n        if(Math.abs(a1-a2)<0.3)ls++;\n      }\n      if(ls>=cluster.length/2)patterns.push({type:'linear',cluster,score:ls});\n    }\n    if(cluster.length>=5){\n      const cx=cluster.reduce((s,m)=>s+m.x,0)/cluster.length;\n      const cy=cluster.reduce((s,m)=>s+m.y,0)/cluster.length;\n      const avgR=cluster.reduce((s,m)=>s+Math.sqrt((m.x-cx)**2+(m.y-cy)**2),0)/cluster.length;\n      let cs=0;\n      cluster.forEach(m=>{const r=Math.sqrt((m.x-cx)**2+(m.y-cy)**2);if(Math.abs(r-avgR)<avgR*0.3)cs++;});\n      if(cs>=cluster.length*0.7)patterns.push({type:'circular',cluster,score:cs,center:{x:cx,y:cy},radius:avgR});\n    }\n  });\n}\nfunction getConvexHull(points){\n  if(points.length<3)return points;\n  points.sort((a,b)=>a.x-b.x||a.y-b.y);\n  const cross=(o,a,b)=>(a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x);\n  const lower=[];for(const p of points){while(lower.length>=2&&cross(lower[lower.length-2],lower[lower.length-1],p)<=0)lower.pop();lower.push(p);}\n  const upper=[];for(let i=points.length-1;i>=0;i--){const p=points[i];while(upper.length>=2&&cross(upper[upper.length-2],upper[upper.length-1],p)<=0)upper.pop();upper.push(p);}\n  return lower.slice(0,-1).concat(upper.slice(0,-1));\n}\nfunction drawClusters(){\n  clusters.forEach(cluster=>{\n    if(cluster.length<3)return;\n    const hull=getConvexHull(cluster.map(m=>({x:m.x,y:m.y})));\n    if(hull.length>0){\n      ctx.strokeStyle='rgba(92,196,164,0.25)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);\n      ctx.beginPath();ctx.moveTo(hull[0].x,hull[0].y);hull.forEach(p=>ctx.lineTo(p.x,p.y));ctx.closePath();ctx.stroke();\n      ctx.fillStyle='rgba(26,107,92,0.06)';ctx.fill();\n      ctx.setLineDash([]);\n    }\n  });\n}\nfunction drawPatterns(){\n  patterns.forEach(p=>{\n    if(p.type==='circular'){\n      ctx.strokeStyle='rgba(200,137,42,0.5)';ctx.lineWidth=2.5;\n      ctx.beginPath();ctx.arc(p.center.x,p.center.y,p.radius,0,Math.PI*2);ctx.stroke();\n      ctx.fillStyle='rgba(232,168,60,0.8)';ctx.font='bold 10px \"JetBrains Mono\"';\n      ctx.fillText('CIRCULAR',p.center.x-24,p.center.y-p.radius-6);\n    }else if(p.type==='linear'){\n      const sorted=p.cluster.sort((a,b)=>a.x-b.x);\n      ctx.strokeStyle='rgba(42,157,126,0.6)';ctx.lineWidth=2.5;ctx.setLineDash([8,4]);\n      ctx.beginPath();ctx.moveTo(sorted[0].x,sorted[0].y);sorted.forEach(m=>ctx.lineTo(m.x,m.y));ctx.stroke();ctx.setLineDash([]);\n      ctx.fillStyle='rgba(92,196,164,0.8)';ctx.font='bold 10px \"JetBrains Mono\"';\n      ctx.fillText('LINEAR',sorted[0].x,sorted[0].y-8);\n    }\n  });\n}\nfunction updateStats(){\n  document.getElementById('totalMolecules').textContent=molecules.length;\n  document.getElementById('clustersFound').textContent=clusters.length;\n  document.getElementById('patternsFound').textContent=patterns.length;\n  const avg=molecules.reduce((s,m)=>s+Math.sqrt(m.vx*m.vx+m.vy*m.vy),0)/molecules.length;\n  document.getElementById('avgSpeed').textContent=avg.toFixed(1);\n}\nfunction animate(){\n  if(isPaused){animationId=requestAnimationFrame(animate);return;}\n  const temperature=parseInt(document.getElementById('tempSlider').value);\n  const density=parseInt(document.getElementById('densitySlider').value);\n  // Clear with dark background\n  ctx.fillStyle='rgba(10,12,16,0.92)';ctx.fillRect(0,0,canvas.width,canvas.height);\n  // Subtle grid\n  ctx.strokeStyle='rgba(42,157,126,0.04)';ctx.lineWidth=0.5;\n  for(let x=0;x<canvas.width;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}\n  for(let y=0;y<canvas.height;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}\n  molecules.forEach(m=>m.update(temperature,density));\n  trackedAtoms.forEach(a=>a.update(temperature));\n  if(Date.now()%30<16){detectClusters();detectPatterns();updateStats();}\n  drawClusters();drawPatterns();\n  molecules.forEach(m=>m.draw(ctx));\n  trackedAtoms.forEach(a=>a.draw(ctx));\n  animationId=requestAnimationFrame(animate);\n}\nfunction resetSimulation(){\n  const d=parseInt(document.getElementById('densitySlider').value);\n  initializeMolecules(d);trackedAtoms=[];\n}\nfunction togglePause(){\n  isPaused=!isPaused;\n  document.getElementById('pauseBtn').textContent=isPaused?'Resume':'Pause';\n}\nfunction addTrackedAtom(){\n  trackedAtoms.push(new TrackedAtom(Math.random()*canvas.width,Math.random()*canvas.height));\n}\ndocument.getElementById('tempSlider').oninput=function(){\n  document.getElementById('tempValue').textContent=`${Math.round(this.value/2-10)}\u00b0C`;\n};\ndocument.getElementById('densitySlider').oninput=function(){\n  document.getElementById('densityValue').textContent=`${this.value*10}%`;\n  resetSimulation();\n};\ncanvas.onclick=function(e){\n  const rect=canvas.getBoundingClientRect();\n  const scaleX=canvas.width/rect.width;\n  const scaleY=canvas.height/rect.height;\n  trackedAtoms.push(new TrackedAtom((e.clientX-rect.left)*scaleX,(e.clientY-rect.top)*scaleY));\n};\ninitializeMolecules(5);animate();\n</script>\n</body>\n</html>\n";
+  
+  function makeBlob(html) {
+    const blob = new Blob([html], {type: 'text/html'});
+    return URL.createObjectURL(blob);
+  }
+  
+  try {
+    document.getElementById('iframe-n2').src = makeBlob(n2Html);
+    document.getElementById('iframe-atmos').src = makeBlob(atmosHtml);
+  } catch(e) {
+    // Fallback: srcdoc
+    document.getElementById('iframe-n2').srcdoc = n2Html;
+    document.getElementById('iframe-atmos').srcdoc = atmosHtml;
+  }
+});
+
+// ── RESIZE ──
+function resize(canvas){
+  const w=canvas.parentElement.clientWidth;
+  canvas.width=w;canvas.height=parseInt(canvas.getAttribute('height'));
+  return{w:canvas.width,h:canvas.height};
+}
+
+// ── S1: COMPLEXITY ──
+(function(){
+  const cv=document.getElementById('c-complexity');
+  const ctx=cv.getContext('2d');
+  let{w,h}=resize(cv);let t=0;
+  function draw(){
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#0a0c10';ctx.fillRect(0,0,w,h);
+    const now=t*0.008;
+    ctx.strokeStyle='rgba(42,157,126,0.06)';ctx.lineWidth=0.5;
+    for(let x=0;x<w;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+    for(let y=0;y<h;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+    const lX=w*0.2;
+    for(let i=0;i<160;i++){
+      const s=i*137.5;
+      const x=lX+Math.sin(now*0.7+s)*w*0.15+Math.cos(now*1.1+s*0.3)*w*0.06;
+      const y=h/2+Math.sin(now*0.9+s*0.5)*h*0.32+Math.cos(now*0.6+s*0.7)*h*0.09;
+      ctx.beginPath();ctx.arc(x,y,1.2,0,Math.PI*2);
+      ctx.fillStyle=`rgba(196,82,46,${0.15+Math.sin(now+s)*0.12})`;ctx.fill();
+    }
+    ctx.font='bold 24px "JetBrains Mono"';ctx.fillStyle='#c4522e';ctx.textAlign='center';ctx.fillText('10⁴⁵',lX,h*0.2);
+    ctx.font='10px "JetBrains Mono"';ctx.fillStyle='rgba(200,137,42,0.6)';
+    ctx.fillText('BRUTE FORCE',lX,h*0.28);ctx.fillText('ATOMIC TRACKING',lX,h*0.34);
+    const aX1=lX+w*0.11,aX2=w*0.64,aY=h/2;
+    const g=ctx.createLinearGradient(aX1,0,aX2,0);
+    g.addColorStop(0,'rgba(196,82,46,0.8)');g.addColorStop(0.5,'rgba(200,137,42,0.9)');g.addColorStop(1,'rgba(26,107,92,0.8)');
+    ctx.beginPath();ctx.moveTo(aX1,aY);ctx.lineTo(aX2,aY);ctx.strokeStyle=g;ctx.lineWidth=2;ctx.stroke();
+    ctx.beginPath();ctx.moveTo(aX2,aY);ctx.lineTo(aX2-10,aY-5);ctx.lineTo(aX2-10,aY+5);ctx.fillStyle='#1a6b5c';ctx.fill();
+    ctx.font='italic 12px "Playfair Display"';ctx.fillStyle='#c8892a';ctx.textAlign='center';
+    ctx.fillText('atmospheric constraint applied',(aX1+aX2)/2,aY-14);
+    ctx.font='bold 10px "JetBrains Mono"';ctx.fillStyle='#e8a83c';
+    ctx.fillText('−10²⁶ REDUCTION',(aX1+aX2)/2,aY+14);
+    const rX=w*0.8;
+    for(let i=0;i<50;i++){
+      const a=(i/50)*Math.PI*2+now*0.25,r=(i%3+1)*h*0.09;
+      const x=rX+Math.cos(a)*r*0.38,y=h/2+Math.sin(a)*r*0.28;
+      ctx.beginPath();ctx.arc(x,y,1.8,0,Math.PI*2);
+      ctx.fillStyle=`rgba(92,196,164,${0.4+Math.sin(now*2+i*0.5)*0.25})`;ctx.fill();
+    }
+    ctx.font='bold 24px "JetBrains Mono"';ctx.fillStyle='#2a9d7e';ctx.textAlign='center';ctx.fillText('10¹⁹',rX,h*0.2);
+    ctx.font='10px "JetBrains Mono"';ctx.fillStyle='rgba(92,196,164,0.65)';
+    ctx.fillText('ATMOSPHERIC',rX,h*0.28);ctx.fillText('CONSTRAINT',rX,h*0.34);
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',()=>{({w,h}=resize(cv));});
+})();
+
+// ── S2: ARCHITECTURE ──
+let archView='flow';
+function setArchView(v){
+  archView=v;
+  document.getElementById('btn-flow').classList.toggle('active',v==='flow');
+  document.getElementById('btn-pulse').classList.toggle('active',v==='pulse');
+}
+(function(){
+  const cv=document.getElementById('c-arch');
+  const ctx=cv.getContext('2d');
+  let{w,h}=resize(cv);let t=0;
+  const sims=[
+    {name:'PHOTON',desc:'Solar radiation',color:'#e8a83c',x:0.5,y:0.1},
+    {name:'THERMO',desc:'Heat transport',color:'#c4522e',x:0.2,y:0.28},
+    {name:'HYDRO',desc:'Water cycle',color:'#2d6fa8',x:0.8,y:0.28},
+    {name:'ATMOS',desc:'O\u2082/N\u2082 master constraint',color:'#2a9d7e',x:0.5,y:0.5,core:true},
+    {name:'LITHOS',desc:'Geological',color:'#6b6455',x:0.15,y:0.72},
+    {name:'BIOS',desc:'Living biology',color:'#5cc4a4',x:0.5,y:0.85},
+    {name:'NECROS',desc:'Decomposition',color:'#b8b0a0',x:0.85,y:0.72},
+    {name:'CONSERV',desc:'Master validator',color:'#c8892a',x:0.5,y:1.0},
+  ];
+  const edges=[[0,3],[1,3],[2,3],[3,4],[3,5],[3,6],[4,7],[5,7],[6,7],[0,1],[0,2],[1,2]];
+  function draw(){
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#0a0c10';ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='rgba(42,157,126,0.05)';ctx.lineWidth=0.5;
+    for(let x=0;x<w;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+    for(let y=0;y<h;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+    const now=t*0.012,hS=0.88;
+    edges.forEach(([a,b],ei)=>{
+      const sa=sims[a],sb=sims[b];
+      const x1=sa.x*w,y1=sa.y*h*hS+15,x2=sb.x*w,y2=sb.y*h*hS+15;
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);
+      ctx.strokeStyle=archView==='flow'?'rgba(92,196,164,0.12)':'rgba(92,196,164,0.05)';ctx.lineWidth=1;ctx.stroke();
+      if(archView==='pulse'){
+        const pf=((now*0.5+ei*0.23)%1);
+        const px=x1+(x2-x1)*pf,py=y1+(y2-y1)*pf;
+        ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);
+        ctx.fillStyle=sims[a].color;ctx.globalAlpha=0.8;ctx.fill();ctx.globalAlpha=1;
+      }
+    });
+    sims.forEach((s,si)=>{
+      const x=s.x*w,y=s.y*h*hS+15,r=s.core?34:22;
+      const p=(Math.sin(now*1.5+si*0.8)+1)/2;
+      const grd=ctx.createRadialGradient(x,y,0,x,y,r*2);
+      grd.addColorStop(0,s.color+'33');grd.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.arc(x,y,r*2,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+      ctx.beginPath();ctx.arc(x,y,r+p*2.5,0,Math.PI*2);
+      ctx.strokeStyle=s.color;ctx.lineWidth=s.core?2.5:1.5;ctx.globalAlpha=0.8+p*0.2;ctx.stroke();ctx.globalAlpha=1;
+      ctx.font=`bold ${s.core?'13':'11'}px "JetBrains Mono"`;ctx.fillStyle=s.color;ctx.textAlign='center';ctx.fillText(s.name,x,y+4);
+      ctx.font='9px "JetBrains Mono"';ctx.fillStyle='rgba(184,176,160,0.55)';ctx.fillText(s.desc,x,y+r+13);
+    });
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',()=>{({w,h}=resize(cv));});
+})();
+
+// ── S3: ATMOSPHERIC ──
+let atmosMode='modern';
+function setAtmosMode(m){
+  atmosMode=m;
+  ['modern','mammoth','ancient'].forEach(id=>document.getElementById('btn-'+id).classList.toggle('active',id===m));
+}
+(function(){
+  const cv=document.getElementById('c-atmos');
+  const ctx=cv.getContext('2d');
+  let{w,h}=resize(cv);let t=0;
+  const cfgs={
+    modern:{o2:0.209,n2:0.781,label:'Modern Biosphere — Current Era',color:'#2a9d7e',noise:0.003},
+    mammoth:{o2:0.204,n2:0.786,label:'28,000 BP — Woolly Mammoth Era',color:'#c8892a',noise:0.006},
+    ancient:{o2:0.19,n2:0.79,label:'300,000 BP — Homo heidelbergensis',color:'#c4522e',noise:0.012},
+  };
+  const history=[];
+  function draw(){
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#0a0c10';ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='rgba(42,157,126,0.05)';ctx.lineWidth=0.5;
+    for(let x=0;x<w;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+    for(let y=0;y<h;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+    const cfg=cfgs[atmosMode],now=t*0.01;
+    const o2=cfg.o2+Math.sin(now*0.7)*cfg.noise+Math.sin(now*2.3)*cfg.noise*0.4;
+    const n2=cfg.n2-Math.sin(now*0.7)*cfg.noise-Math.sin(now*2.3)*cfg.noise*0.4;
+    history.push({o2,n2});
+    if(history.length>w*0.72)history.shift();
+    const pL=w*0.08,pR=w*0.05,pT=h*0.14,pB=h*0.15,cW=w-pL-pR,cH=h-pT-pB;
+    ctx.strokeStyle='rgba(107,100,85,0.18)';ctx.lineWidth=0.5;
+    for(let i=0;i<=5;i++){const y=pT+(i/5)*cH;ctx.beginPath();ctx.moveTo(pL,y);ctx.lineTo(pL+cW,y);ctx.stroke();}
+    if(history.length>2){
+      ctx.beginPath();
+      history.forEach((pt,i)=>{
+        const x=pL+(i/history.length)*cW;
+        const y=pT+cH*(1-(pt.o2-0.185)/(0.215-0.185)*0.6-0.15);
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      });
+      ctx.strokeStyle=cfg.color;ctx.lineWidth=2;ctx.globalAlpha=0.9;ctx.stroke();ctx.globalAlpha=1;
+      ctx.beginPath();
+      history.forEach((pt,i)=>{
+        const x=pL+(i/history.length)*cW;
+        const y=pT+cH*(0.85-(pt.n2-0.77)/(0.795-0.77)*0.5);
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      });
+      ctx.strokeStyle='#2d6fa8';ctx.lineWidth=1.5;ctx.globalAlpha=0.7;ctx.stroke();ctx.globalAlpha=1;
+    }
+    ctx.font='bold 12px "JetBrains Mono"';ctx.fillStyle=cfg.color;ctx.textAlign='left';
+    ctx.fillText(`O\u2082: ${(o2*100).toFixed(2)}%`,pL,pT-16);
+    ctx.fillStyle='#2d6fa8';ctx.fillText(`N\u2082: ${(n2*100).toFixed(2)}%`,pL+115,pT-16);
+    ctx.font='9px "JetBrains Mono"';ctx.fillStyle='rgba(184,176,160,0.55)';ctx.textAlign='right';
+    ctx.fillText(cfg.label,w-pR,pT-16);
+    const cY=pT+cH*0.36;
+    ctx.strokeStyle='rgba(92,196,164,0.25)';ctx.lineWidth=1;ctx.setLineDash([4,6]);
+    ctx.beginPath();ctx.moveTo(pL,cY);ctx.lineTo(pL+cW,cY);ctx.stroke();ctx.setLineDash([]);
+    ctx.font='9px "JetBrains Mono"';ctx.fillStyle='rgba(92,196,164,0.45)';ctx.textAlign='right';
+    ctx.fillText('biological constraint threshold',pL+cW,cY-4);
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',()=>{({w,h}=resize(cv));});
+})();
+
+// ── S8: MAMMOTH ──
+let mammothT=0,mammothRunning=false;
+const mammothPhases=[
+  'Phase 1: Loading Siberian permafrost ice core atmospheric data (NOAA archives)...',
+  'Phase 2: Integrating O\u2082/N\u2082 constraint validation — ATMOS simulator active...',
+  'Phase 3: Environmental DNA cross-referencing — BIOS simulator online...',
+  'Phase 4: Brownian trajectory probability field generation — escape patterns applied...',
+  'Phase 5: NECROS decomposition pathway modeling — 28,000 year decay accounting...',
+  'Phase 6: Molecular cluster convergence — identity reconstruction crystallizing...',
+  'Phase 7: Fidelity validation complete — 96% \u00b1 8% confidence achieved.',
+];
+function resetMammoth(){mammothT=0;mammothRunning=true;}
+(function(){
+  const cv=document.getElementById('c-mammoth');
+  const ctx=cv.getContext('2d');
+  let{w,h}=resize(cv);
+  function draw(){
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#0a0c10';ctx.fillRect(0,0,w,h);
+    ctx.strokeStyle='rgba(42,157,126,0.04)';ctx.lineWidth=0.5;
+    for(let x=0;x<w;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+    for(let y=0;y<h;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+    const now=mammothT*0.008,total=600,progress=Math.min(mammothT/total,1);
+    const phase=Math.min(Math.floor(progress*mammothPhases.length),mammothPhases.length-1);
+    if(mammothRunning)document.getElementById('mammoth-phase-label').textContent=mammothPhases[phase];
+    for(let i=0;i<8;i++){
+      const y=(h*(i+1))/9,a=0.04+progress*0.06;
+      ctx.strokeStyle=i%2===0?`rgba(42,157,126,${a})`:`rgba(45,111,168,${a})`;ctx.lineWidth=1;
+      ctx.beginPath();
+      for(let x=0;x<w;x+=3){const sy=y+Math.sin(x*0.05+now*(i%3+1)*0.5)*8;x===0?ctx.moveTo(x,sy):ctx.lineTo(x,sy);}
+      ctx.stroke();
+    }
+    const cx=w*0.48,cy=h*0.47,maxR=Math.min(w,h)*0.3;
+    for(let ring=8;ring>=0;ring--){
+      const rP=Math.max(0,progress*10-ring*0.8),r=maxR*(1-ring/10)*Math.min(rP,1);
+      if(r<=0)continue;
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.strokeStyle=ring%2===0?`rgba(42,157,126,${0.06+rP*0.08})`:`rgba(200,137,42,${0.05+rP*0.06})`;
+      ctx.lineWidth=1.5;ctx.stroke();
+    }
+    const pCount=Math.floor(progress*110);
+    for(let i=0;i<pCount;i++){
+      const seed=i*47.3,angle=seed%(Math.PI*2);
+      const dist=Math.max(0,(1-progress)*maxR*1.4+Math.sin(now+seed)*18);
+      const x=cx+Math.cos(angle)*dist,y=cy+Math.sin(angle)*dist*0.6;
+      const alpha=0.25+(progress-dist/maxR/2)*0.45;
+      ctx.beginPath();ctx.arc(x,y,1.5,0,Math.PI*2);
+      ctx.fillStyle=progress>0.65?`rgba(92,196,164,${alpha})`:`hsla(${(i*137)%360},60%,60%,${alpha*0.45})`;ctx.fill();
+    }
+    if(progress>0.5){
+      const cA=(progress-0.5)*2,cR=maxR*0.18*cA;
+      const grd=ctx.createRadialGradient(cx,cy,0,cx,cy,cR);
+      grd.addColorStop(0,'rgba(92,196,164,0.4)');grd.addColorStop(0.5,'rgba(42,157,126,0.18)');grd.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.arc(cx,cy,cR,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+    }
+    const mX=w*0.8,mY=h*0.16,mH=h*0.58,fid=0.96*progress;
+    ctx.strokeStyle='rgba(107,100,85,0.35)';ctx.lineWidth=1;ctx.strokeRect(mX-13,mY,26,mH);
+    const fH=mH*fid;
+    const fg=ctx.createLinearGradient(0,mY+mH,0,mY+mH-fH);
+    fg.addColorStop(0,'rgba(42,157,126,0.85)');fg.addColorStop(1,'rgba(92,196,164,0.4)');
+    ctx.fillStyle=fg;ctx.fillRect(mX-12,mY+mH-fH,24,fH);
+    ctx.font='bold 14px "JetBrains Mono"';ctx.fillStyle='#2a9d7e';ctx.textAlign='center';
+    ctx.fillText(`${Math.round(fid*100)}%`,mX,mY+mH+20);
+    ctx.font='8px "JetBrains Mono"';ctx.fillStyle='rgba(184,176,160,0.55)';ctx.fillText('FIDELITY',mX,mY+mH+31);
+    ctx.font='9px "JetBrains Mono"';ctx.fillStyle='rgba(200,137,42,0.55)';ctx.textAlign='left';
+    ctx.fillText(`Atmospheric integration: ${Math.round(progress*28000).toLocaleString()} BP`,14,18);
+    ctx.fillText(`Constraint validators: ${Math.round(progress*8)}/8 active`,14,30);
+    if(mammothRunning&&progress<1)mammothT++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',()=>{({w,h}=resize(cv));});
+})();
+
+// ── FIDELITY BARS ──
+function animateBars(){document.querySelectorAll('.fidelity-fill').forEach(el=>{el.style.width=el.dataset.w+'%';});}
+
+// ── SCROLL REVEAL ──
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      if(e.target.id==='fig7')animateBars();
+      if(e.target.id==='fig8'&&!mammothRunning)resetMammoth();
+    }
+  });
+},{threshold:0.08});
+document.querySelectorAll('.figure-section').forEach(s=>revObs.observe(s));
+</script>
+</body>
+</html>
