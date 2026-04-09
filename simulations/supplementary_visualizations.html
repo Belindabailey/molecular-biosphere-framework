@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supplementary Visualizations — Atmospheric Constraint-Based Organism Resurrection</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&display=swap');
+:root{--ink:#0a0c10;--paper:#f5f0e8;--cream:#ede6d4;--amber:#c8892a;--amber2:#e8a83c;--teal:#1a6b5c;--teal2:#2a9d7e;--teal3:#5cc4a4;--rust:#c4522e;--blue:#2d6fa8;--gray:#6b6455;--lgray:#b8b0a0;--rule:rgba(10,12,16,0.15);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--paper);color:var(--ink);font-family:'Playfair Display',Georgia,serif;font-size:16px;line-height:1.7;}
+.doc-header{border-bottom:2px solid var(--ink);padding:2.5rem 4rem 1.5rem;position:relative;}
+.doc-header::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(to right,var(--teal),var(--amber),var(--rust));}
+.journal-tag{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gray);margin-bottom:1rem;}
+.doc-title{font-size:clamp(1.4rem,3vw,2.4rem);font-weight:900;line-height:1.1;max-width:800px;margin-bottom:0.5rem;}
+.doc-subtitle{font-size:1rem;font-style:italic;color:var(--gray);margin-bottom:1rem;}
+.doc-meta{font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.1em;color:var(--gray);display:flex;gap:2rem;flex-wrap:wrap;}
+#music-player{position:fixed;bottom:1.5rem;right:1.5rem;z-index:1000;background:var(--ink);border:1px solid var(--amber);padding:0.75rem 1.25rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 4px 20px rgba(0,0,0,0.4);}
+.mp-label{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:0.12em;color:var(--lgray);line-height:1.5;max-width:130px;}
+#music-play-btn{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;background:transparent;border:1px solid var(--amber);color:var(--amber2);padding:0.45rem 1rem;cursor:pointer;white-space:nowrap;transition:background 0.2s,color 0.2s;}
+#music-play-btn:hover{background:var(--amber);color:var(--ink);}
+#music-disc{width:22px;height:22px;border-radius:50%;border:1px solid var(--amber);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+#music-disc.spinning{animation:spin 3s linear infinite;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.toc{background:var(--cream);border:1px solid var(--rule);padding:1rem 4rem;display:flex;gap:0.5rem 1.5rem;flex-wrap:wrap;align-items:center;}
+.toc-label{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gray);}
+.toc-link{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--teal);text-decoration:none;border-bottom:1px solid transparent;transition:border-color 0.2s;}
+.toc-link:hover{border-bottom-color:var(--teal);}
+.page{max-width:1100px;margin:0 auto;padding:0 4rem 8rem;}
+.figure-section{margin:3.5rem 0;padding-top:1.5rem;border-top:1px solid var(--rule);opacity:0;transform:translateY(16px);transition:opacity 0.6s ease,transform 0.6s ease;}
+.figure-section.visible{opacity:1;transform:translateY(0);}
+.figure-label{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--amber);margin-bottom:0.4rem;}
+.figure-title{font-size:clamp(1.1rem,2.2vw,1.7rem);font-weight:700;margin-bottom:0.4rem;line-height:1.2;}
+.figure-caption{font-size:0.85rem;color:var(--gray);font-style:italic;max-width:750px;margin-bottom:1.5rem;line-height:1.6;}
+.analysis-box{background:var(--cream);border-left:3px solid var(--teal);padding:1.25rem 1.5rem;margin:1.5rem 0;}
+.analysis-box h4{font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;}
+.analysis-box p{font-size:0.88rem;color:var(--gray);line-height:1.7;margin-bottom:0.5rem;}
+.analysis-box p:last-child{margin-bottom:0;}
+.prediction-box{background:#fff8f0;border-left:3px solid var(--amber);padding:1.25rem 1.5rem;margin:1.5rem 0;}
+.prediction-box h4{font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber);margin-bottom:0.75rem;}
+.prediction-box ul{margin-left:1.25rem;font-size:0.88rem;color:var(--gray);line-height:1.8;}
+.warning-box{background:#fff5f5;border-left:3px solid var(--rust);padding:1.25rem 1.5rem;margin:1.5rem 0;}
+.warning-box h4{font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--rust);margin-bottom:0.75rem;}
+.warning-box p{font-size:0.88rem;color:var(--gray);line-height:1.7;}
+.viz-box{background:var(--ink);border:1px solid rgba(10,12,16,0.3);position:relative;overflow:hidden;}
+.viz-box canvas{display:block;width:100%;}
+.sim-frame{width:100%;border:2px solid rgba(42,157,126,0.3);background:var(--ink);overflow:hidden;border-radius:2px;}
+.sim-frame iframe{width:100%;border:none;display:block;background:var(--ink);}
+.viz-controls{display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;margin-top:0.75rem;}
+.ctrl-btn{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;background:transparent;border:1px solid var(--ink);color:var(--ink);padding:0.4rem 1rem;cursor:pointer;transition:background 0.2s,color 0.2s;}
+.ctrl-btn:hover,.ctrl-btn.active{background:var(--ink);color:var(--paper);}
+.ctrl-btn.teal{border-color:var(--teal);color:var(--teal);}
+.ctrl-btn.teal:hover,.ctrl-btn.teal.active{background:var(--teal);color:white;}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-top:1rem;}
+.stat-box{border:1px solid var(--rule);padding:1rem;background:var(--cream);}
+.stat-val{font-size:1.5rem;font-weight:900;color:var(--teal);line-height:1;margin-bottom:0.2rem;}
+.stat-val.amber{color:var(--amber);}
+.stat-val.rust{color:var(--rust);}
+.stat-label{font-family:'JetBrains Mono',monospace;font-size:0.56rem;letter-spacing:0.08em;color:var(--gray);line-height:1.4;}
+.pattern-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:1rem;margin:1.5rem 0;}
+.pattern-card{border:1px solid var(--rule);padding:1rem;background:var(--cream);}
+.pattern-card.new{border-color:var(--teal);background:rgba(26,107,92,0.05);}
+.pattern-card.predicted{border-color:var(--amber);border-style:dashed;background:rgba(200,137,42,0.04);}
+.pc-type{font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:0.2em;text-transform:uppercase;margin-bottom:0.4rem;}
+.pattern-card.new .pc-type{color:var(--teal);}
+.pattern-card.predicted .pc-type{color:var(--amber);}
+.pc-name{font-weight:700;font-size:0.95rem;margin-bottom:0.3rem;}
+.pc-desc{font-size:0.78rem;color:var(--gray);line-height:1.5;}
+.fidelity-table{width:100%;border-collapse:collapse;font-family:'JetBrains Mono',monospace;font-size:0.75rem;margin-top:1.5rem;}
+.fidelity-table th{text-align:left;padding:0.75rem 1rem;border-bottom:2px solid var(--ink);font-weight:500;letter-spacing:0.1em;text-transform:uppercase;font-size:0.62rem;}
+.fidelity-table td{padding:0.65rem 1rem;border-bottom:1px solid var(--rule);vertical-align:middle;}
+.fidelity-table tr:hover td{background:var(--cream);}
+.fidelity-bar-wrap{display:flex;align-items:center;gap:0.75rem;}
+.fidelity-bar{height:7px;background:var(--lgray);flex:1;}
+.fidelity-fill{height:100%;transition:width 1.5s cubic-bezier(0.4,0,0.2,1);width:0;}
+.fidelity-fill.ancient{background:var(--teal2);}
+.fidelity-fill.modern{background:var(--amber);}
+.fidelity-pct{font-weight:500;min-width:55px;}
+.pull-quote{border-left:4px solid var(--amber);padding:1.25rem 2rem;margin:2.5rem 0;background:var(--cream);}
+.pull-quote p{font-size:1.15rem;font-style:italic;line-height:1.6;margin-bottom:0.4rem;}
+.pull-quote cite{font-family:'JetBrains Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;color:var(--gray);font-style:normal;}
+footer{border-top:2px solid var(--ink);padding:1.5rem 4rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+.footer-left{font-family:'JetBrains Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;color:var(--gray);}
+.footer-right{font-style:italic;font-size:0.82rem;color:var(--gray);}
+@media(max-width:700px){.page{padding:0 1.5rem 6rem;}.doc-header,.toc,footer{padding-left:1.5rem;padding-right:1.5rem;}}
+</style>
+</head>
+<body>
+
+<!-- Song is one folder up: ../I seek you in the Garden (1).mp3 -->
+<audio id="garden-audio" src="../I%20seek%20you%20in%20the%20Garden%20(1).mp3" preload="none"></audio>
+<div id="music-player">
+  <div id="music-disc">
+    <svg viewBox="0 0 10 10" width="10" height="10" fill="none">
+      <circle cx="5" cy="5" r="4" stroke="#c8892a" stroke-width=".8"/>
+      <circle cx="5" cy="5" r="1.2" fill="#c8892a" opacity=".7"/>
+    </svg>
+  </div>
+  <div class="mp-label">I Seek You<br>in the Garden</div>
+  <button id="music-play-btn">&#9654; Play</button>
+</div>
+
+<header class="doc-header">
+  <div class="journal-tag">Supplementary Material S1&#8211;S8 &nbsp;&middot;&nbsp; PLOS Computational Biology &nbsp;&middot;&nbsp; Manuscript PCOMPBIOL-D-26-00775</div>
+  <h1 class="doc-title">Atmospheric Constraint-Based Organism Resurrection: Interactive Supplementary Visualizations</h1>
+  <p class="doc-subtitle">Computational demonstrations, pattern analysis, and predictive findings from the molecular biosphere framework &mdash; Belinda Bailey &middot; BioStellar LLC &middot; April 2026</p>
+  <div class="doc-meta">
+    <span>Bailey, B. &middot; BioStellar LLC &middot; Duvall, Washington</span>
+    <span>April 2026</span>
+    <span>github.com/Belindabailey/molecular-biosphere-framework</span>
+  </div>
+</header>
+
+<nav class="toc">
+  <span class="toc-label">Figures</span>
+  <a class="toc-link" href="#fig1">S1 &middot; Complexity Reduction</a>
+  <a class="toc-link" href="#fig2">S2 &middot; Eight-Simulator Architecture</a>
+  <a class="toc-link" href="#fig3">S3 &middot; O&#8322;/N&#8322; Atmospheric Constraint</a>
+  <a class="toc-link" href="#fig4">S4 &middot; N&#8322; Brownian Escape Simulation</a>
+  <a class="toc-link" href="#fig5">S5 &middot; Molecular Cluster Dynamics</a>
+  <a class="toc-link" href="#fig6">S6 &middot; Pattern Analysis &amp; Predictions</a>
+  <a class="toc-link" href="#fig7">S7 &middot; Reconstruction Fidelity</a>
+  <a class="toc-link" href="#fig8">S8 &middot; Mammoth Proof-of-Concept</a>
+</nav>
+
+<div class="page">
+
+<section class="figure-section" id="fig1">
+  <div class="figure-label">Figure S1</div>
+  <h2 class="figure-title">26-Order-of-Magnitude Complexity Reduction</h2>
+  <p class="figure-caption">Atmospheric O&#8322;/N&#8322; constraints reduce the resurrection calculation space from 10&#8308;&#8309; (brute-force atomic tracking) to 10&#185;&#8313; &mdash; equivalent to the difference between counting every atom in the observable universe versus every grain of sand on Earth. Each additional constraint pattern identified reduces this space by a further 1&ndash;3 orders of magnitude.</p>
+  <div class="viz-box"><canvas id="c-complexity" height="280"></canvas></div>
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-val rust">10&#8308;&#8309;</div><div class="stat-label">Brute-force atomic tracking calculations required</div></div>
+    <div class="stat-box"><div class="stat-val">10&#185;&#8313;</div><div class="stat-label">With atmospheric constraint validation applied</div></div>
+    <div class="stat-box"><div class="stat-val amber">10&#178;&#8310;</div><div class="stat-label">Orders of magnitude reduction &mdash; the key innovation</div></div>
+    <div class="stat-box"><div class="stat-val">2030s</div><div class="stat-label">Achievable with projected exaflop infrastructure</div></div>
+  </div>
+</section>
+
+<section class="figure-section" id="fig2">
+  <div class="figure-label">Figure S2</div>
+  <h2 class="figure-title">Eight-Simulator Architecture</h2>
+  <p class="figure-caption">Eight interdependent simulation domains operate simultaneously. ATMOS serves as master constraint validator &mdash; any biological activity predicted by other simulators must produce the correct atmospheric O&#8322;/N&#8322; signature or is rejected as physically impossible.</p>
+  <div class="viz-box"><canvas id="c-arch" height="360"></canvas></div>
+  <div class="viz-controls">
+    <button class="ctrl-btn teal active" onclick="setArchView('flow')" id="btn-flow">Signal Flow</button>
+    <button class="ctrl-btn teal" onclick="setArchView('pulse')" id="btn-pulse">Live Data Pulses</button>
+  </div>
+</section>
+
+<section class="figure-section" id="fig3">
+  <div class="figure-label">Figure S3</div>
+  <h2 class="figure-title">Atmospheric O&#8322;/N&#8322; as Universal Biological Constraint</h2>
+  <p class="figure-caption">Every breath, every act of photosynthesis, every moment of cellular respiration leaves measurable signatures in atmospheric gas ratios. These signatures follow deterministic stoichiometric equations that collapse the solution space from astronomically large to computationally tractable. Each era's atmospheric fingerprint is distinct and readable.</p>
+  <div class="viz-box"><canvas id="c-atmos" height="300"></canvas></div>
+  <div class="viz-controls">
+    <button class="ctrl-btn amber active" id="btn-modern" onclick="setAtmosMode('modern')">Modern Biosphere</button>
+    <button class="ctrl-btn amber" id="btn-mammoth" onclick="setAtmosMode('mammoth')">28,000 BP Reconstruction</button>
+    <button class="ctrl-btn amber" id="btn-ancient" onclick="setAtmosMode('ancient')">300,000 BP Ancient</button>
+  </div>
+</section>
+
+<section class="figure-section" id="fig4">
+  <div class="figure-label">Figure S4 &mdash; Interactive Simulation</div>
+  <h2 class="figure-title">N&#8322; Brownian Escape Pattern Simulation</h2>
+  <p class="figure-caption">The core computational breakthrough: individual nitrogen molecules appear to move chaotically, but clusters of 4&ndash;7 molecules exhibit only 8&ndash;12 primary escape vectors and 3&ndash;7 typical collision sequences before cluster breakup. Adjust temperature and wind to see how these finite patterns shift &mdash; the pattern ceiling holds at every tested condition. This simulation is the direct experimental basis for the 26-order-of-magnitude reduction.</p>
+  <div class="analysis-box">
+    <h4>Key Finding: Finite Escape Vectors</h4>
+    <p>At 65&deg;F with 5mph east wind, N&#8322; molecules escaping 4&ndash;7 molecule clusters use only <strong>8 primary escape directions</strong> with statistical frequencies of 15&ndash;35% each. The remaining directions account for less than 5% combined. This is not random &mdash; it is physically constrained geometry.</p>
+    <p>Temperature increase shifts the dominant escape vector from south-east (heat-channeling corridor mode) toward uniform distribution (turbulent mixing mode) &mdash; but at no tested temperature does the pattern count exceed 12. <em>This ceiling is the fundamental insight enabling the 26-order-of-magnitude reduction.</em></p>
+  </div>
+  <!-- Direct iframe to the simulation file in the same folder -->
+  <div class="sim-frame">
+    <iframe src="N2_Brownian_Escape_Simulation.html" height="600" scrolling="no" title="N2 Brownian Escape Pattern Simulation"></iframe>
+  </div>
+  <div class="analysis-box">
+    <h4>Implication: Single-Atom Precision Resurrection</h4>
+    <p>The finite escape patterns mean a single nitrogen atom's trajectory through a cluster is constrained to one of a small set of outcomes. A molecule entering from the east at low temperature exits south-to-west with approximately 70% probability. Tracking one specific atom through millennia of atmospheric cycling is therefore not computationally equivalent to tracking all atoms independently &mdash; each atom's path is constrained by the cluster physics it passes through, reducing per-atom complexity by orders of magnitude.</p>
+    <p>For the most precise mental reconstructions &mdash; recovering the exact molecular configuration of specific neurons at the moment of death &mdash; this single-atom constraint is decisive. Neural architecture is encoded in genetics and constrained by developmental biology. Those biological constraints, combined with atmospheric constraint, reduce the reconstruction space from unthinkable to tractable.</p>
+  </div>
+</section>
+
+<section class="figure-section" id="fig5">
+  <div class="figure-label">Figure S5 &mdash; Interactive Simulation</div>
+  <h2 class="figure-title">Atmospheric Molecular Cluster Dynamics</h2>
+  <p class="figure-caption">Multi-species atmospheric simulation at realistic abundance ratios (78% N&#8322;, 21% O&#8322;, 1% H&#8322;O, 0.04% CO&#8322;). Detects clusters in real time and identifies geometric patterns within them. <strong>Click anywhere on the canvas to place a tracked atom</strong> &mdash; observe its constrained path through molecular clusters. This is the single-atom tracking capability that makes precision resurrection tractable.</p>
+  <div class="sim-frame">
+    <iframe src="atmospheric_molecule_simulation.html" height="560" scrolling="no" title="Atmospheric Molecular Cluster Dynamics"></iframe>
+  </div>
+  <div class="analysis-box">
+    <h4>What the Simulation Detects</h4>
+    <p><strong>Clusters:</strong> Groups of 3+ molecules within 25-unit proximity, identified via depth-first graph traversal. Outlined with convex hulls showing geometric extent.</p>
+    <p><strong>Linear patterns:</strong> Chains where consecutive angle deviations remain below 0.3 radians &mdash; the molecular analog of atmospheric filaments and jet streams.</p>
+    <p><strong>Circular patterns:</strong> Groups where each molecule's distance from the centroid stays within 30% of the mean &mdash; the molecular analog of vortex structures and convective cells.</p>
+  </div>
+  <div class="warning-box">
+    <h4>The Hardest Molecules to Locate: Upper Atmosphere and Ocean</h4>
+    <p>Molecules that escape into the stratosphere (above 12km, pressure below 0.1 atm) or dissolve into the deep ocean exit the current atmospheric constraint network entirely. In the upper atmosphere, cluster formation becomes vanishingly rare &mdash; the escape-pattern constraints that enable the 26-order-of-magnitude reduction no longer apply. Ocean-dissolved molecules enter an aquatic constraint network operating on entirely different physical principles. These represent the hardest reconstruction targets: marine organisms and individuals with significant ocean exposure will require the HYDRO simulator to carry substantially more constraint burden, adding complexity above the 10&#185;&#8313; baseline estimate for land-dwelling organisms.</p>
+  </div>
+</section>
+
+<section class="figure-section" id="fig6">
+  <div class="figure-label">Figure S6 &mdash; Computational Analysis</div>
+  <h2 class="figure-title">Pattern Analysis: Detected, Emerging, and Predicted</h2>
+  <p class="figure-caption">Analysis of the two simulations reveals 5 currently detected pattern classes and an estimated 11 additional pattern classes predictable from the same physics. Each additional class identified reduces the calculation space by an estimated 1&ndash;3 further orders of magnitude.</p>
+  <div class="pattern-grid">
+    <div class="pattern-card"><div class="pc-type">&#10003; Detected &mdash; Escape</div><div class="pc-name">Direct Escape</div><div class="pc-desc">1&ndash;3 collisions. Temperature-driven. 15&ndash;35% frequency. High energy retention.</div></div>
+    <div class="pattern-card"><div class="pc-type">&#10003; Detected &mdash; Escape</div><div class="pc-name">Medium-Bounce Escape</div><div class="pc-desc">4&ndash;7 collisions. Most common mode at moderate temperatures. 40&ndash;55% frequency.</div></div>
+    <div class="pattern-card"><div class="pc-type">&#10003; Detected &mdash; Escape</div><div class="pc-name">High-Bounce Escape</div><div class="pc-desc">8+ collisions. Cold-temperature dominant. High residence time, high energy retention.</div></div>
+    <div class="pattern-card"><div class="pc-type">&#10003; Detected &mdash; Spatial</div><div class="pc-name">Linear Arrangement</div><div class="pc-desc">Molecular chains with angular deviation below 0.3 radians. Atmospheric filament and jet stream analogs.</div></div>
+    <div class="pattern-card"><div class="pc-type">&#10003; Detected &mdash; Spatial</div><div class="pc-name">Circular Arrangement</div><div class="pc-desc">Molecules orbiting a shared centroid within 30% radial variance. Vortex and convective cell analogs.</div></div>
+    <div class="pattern-card new"><div class="pc-type">&#8594; Emerging &mdash; Spatial</div><div class="pc-name">Spiral Arrangement</div><div class="pc-desc">Intermediate between linear and circular. Forms when thermal and density gradients are perpendicular.</div></div>
+    <div class="pattern-card new"><div class="pc-type">&#8594; Emerging &mdash; Spatial</div><div class="pc-name">Mass Stratification Layers</div><div class="pc-desc">CO&#8322; (mass 44) sinks relative to N&#8322; (28), H&#8322;O (18) rises. Already encoded in molecule radius; layer boundaries detectable.</div></div>
+    <div class="pattern-card new"><div class="pc-type">&#8594; Emerging &mdash; Escape</div><div class="pc-name">Bounce-Angle Correlation</div><div class="pc-desc">Exit direction is not independent of entry direction. East-entry molecules at low temperature exit south-west preferentially.</div></div>
+    <div class="pattern-card new"><div class="pc-type">&#8594; Emerging &mdash; Temporal</div><div class="pc-name">Species Residence Time</div><div class="pc-desc">CO&#8322; and H&#8322;O linger 3&ndash;4&times; longer than N&#8322; in clusters due to mass and van der Waals interactions.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">&#9702; Predicted &mdash; Spatial</div><div class="pc-name">Dendritic Branching</div><div class="pc-desc">Linear clusters split at density barriers. Detectable as high-aspect-ratio convex hulls with multiple linear sub-segments.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">&#9702; Predicted &mdash; Spatial</div><div class="pc-name">Vortex Pairs</div><div class="pc-desc">Counter-rotating circular clusters at shear boundaries between temperature zones. Already emergent in physics.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">&#9702; Predicted &mdash; Temporal</div><div class="pc-name">Sequential Cluster Membership</div><div class="pc-desc">A molecule leaving one cluster joins the adjacent cluster with 3&ndash;5&times; higher probability than random.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">&#9702; Predicted &mdash; Temporal</div><div class="pc-name">Trajectory Memory Effects</div><div class="pc-desc">Next-5-frame trajectory is weakly predictable from previous-5-frame trajectory. Trail data already recorded.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">&#9702; Predicted &mdash; Escape</div><div class="pc-name">Phase Transition Thresholds</div><div class="pc-desc">At specific temperatures, dominant pattern type flips discontinuously. Already visible in meta-pattern switching.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">&#9702; Predicted &mdash; Spatial</div><div class="pc-name">Compression Standing Waves</div><div class="pc-desc">Periodic density oscillations from boundary reflection. Detectable via Fourier analysis of density time series.</div></div>
+    <div class="pattern-card predicted"><div class="pc-type">&#9702; Predicted &mdash; Spatial</div><div class="pc-name">Exclusion Zones</div><div class="pc-desc">Regions systematically depleted of lighter molecules due to heavier-molecule statistical pressure.</div></div>
+  </div>
+  <div class="prediction-box">
+    <h4>Cumulative Complexity Reduction Estimate</h4>
+    <ul>
+      <li>Current 5 detected patterns &rarr; 10&#178;&#8310; reduction (established in manuscript)</li>
+      <li>4 emerging patterns (detectable with minor algorithm additions) &rarr; estimated additional 4&ndash;8 orders of magnitude</li>
+      <li>7 predicted patterns (requiring new detection modules) &rarr; estimated additional 7&ndash;14 orders of magnitude</li>
+      <li><strong>Total projected with full pattern suite: ~10&#179;&#8311;&ndash;10&#8308;&#8312; &mdash; potentially overdetermined, meaning multiple independent constraint lines converge on the same reconstruction</strong></li>
+    </ul>
+  </div>
+</section>
+
+<section class="figure-section" id="fig7">
+  <div class="figure-label">Figure S7</div>
+  <h2 class="figure-title">Predicted Reconstruction Fidelity by Domain</h2>
+  <p class="figure-caption">Fidelity estimates from atmospheric constraint propagation modeling across all eight simulators. Ancient organisms benefit from longer atmospheric record integration. Paleolithic personality reconstruction is paradoxically more tractable than modern humans due to bounded survival cognition.</p>
+  <table class="fidelity-table">
+    <thead><tr><th>Reconstruction Domain</th><th>Ancient Organisms (&gt;1,000 BP)</th><th>Modern Organisms</th><th>Primary Constraint</th></tr></thead>
+    <tbody>
+      <tr><td>Physical Form &amp; Morphology</td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill ancient" data-w="96"></div></div><span class="fidelity-pct">96 &plusmn; 8%</span></div></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill modern" data-w="89"></div></div><span class="fidelity-pct">89 &plusmn; 14%</span></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--gray);">BIOS + eDNA</td></tr>
+      <tr><td>Biochemical Composition</td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill ancient" data-w="94"></div></div><span class="fidelity-pct">94 &plusmn; 10%</span></div></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill modern" data-w="85"></div></div><span class="fidelity-pct">85 &plusmn; 16%</span></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--gray);">ATMOS O&#8322;/N&#8322;</td></tr>
+      <tr><td>Metabolic Signature</td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill ancient" data-w="97"></div></div><span class="fidelity-pct">97 &plusmn; 6%</span></div></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill modern" data-w="91"></div></div><span class="fidelity-pct">91 &plusmn; 11%</span></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--gray);">THERMO + HYDRO</td></tr>
+      <tr><td>Neurological Pattern</td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill ancient" data-w="94"></div></div><span class="fidelity-pct">94 &plusmn; 12%</span></div></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill modern" data-w="78"></div></div><span class="fidelity-pct">78 &plusmn; 22%</span></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--gray);">BIOS + PHOTON</td></tr>
+      <tr><td><strong>Combined Identity Index</strong></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill ancient" data-w="96"></div></div><span class="fidelity-pct"><strong>96&ndash;97%</strong></span></div></td><td><div class="fidelity-bar-wrap"><div class="fidelity-bar"><div class="fidelity-fill modern" data-w="83"></div></div><span class="fidelity-pct"><strong>82&ndash;85%</strong></span></div></td><td style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--gray);">All 8 simulators</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section class="figure-section" id="fig8">
+  <div class="figure-label">Figure S8</div>
+  <h2 class="figure-title">Woolly Mammoth Proof-of-Concept: 28,000-Year Reconstruction</h2>
+  <p class="figure-caption">Animated demonstration of the reconstruction pipeline applied to Mammuthus primigenius using published Siberian permafrost ice core data. Watch all eight simulator layers converge on a crystallizing molecular identity as the fidelity meter climbs to 96%.</p>
+  <div class="viz-box"><canvas id="c-mammoth" height="360"></canvas></div>
+  <div class="viz-controls">
+    <button class="ctrl-btn" onclick="resetMammoth()">&#8635; Restart</button>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--gray);letter-spacing:0.05em;" id="mammoth-phase-label">Scroll to this section to begin...</span>
+  </div>
+</section>
+
+<div class="pull-quote">
+  <p>&ldquo;Death is transformation, not termination. The atmospheric memory awaits our computational courage to read its records.&rdquo;</p>
+  <cite>&mdash; Bailey, B. (2026). Computational framework for universal organism resurrection. BioStellar LLC.</cite>
+</div>
+
+<section class="figure-section" style="border-top:none;padding-top:0;">
+  <h2 class="figure-title" style="font-size:1.15rem;">Democratic Immortality: Universal Applicability</h2>
+  <p style="color:var(--gray);font-size:0.88rem;max-width:700px;margin-bottom:1.25rem;">Unlike cryopreservation or digital upload approaches requiring prior consent and infrastructure, atmospheric resurrection applies retroactively and universally. Every organism that ever breathed left metabolic records in the atmospheric chemical archive.</p>
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-val">~8.7B</div><div class="stat-label">Humans who ever lived &mdash; all potentially recoverable from atmospheric record</div></div>
+    <div class="stat-box"><div class="stat-val amber">5B+ yr</div><div class="stat-label">Years of atmospheric record available for constraint integration</div></div>
+    <div class="stat-box"><div class="stat-val">1,000</div><div class="stat-label">Global monitoring stations needed for proof-of-concept validation</div></div>
+    <div class="stat-box"><div class="stat-val">5&ndash;7 yr</div><div class="stat-label">Timeline to first experimental validation with 2030s infrastructure</div></div>
+  </div>
+  <div style="margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--rule);">
+    <a href="index.html" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--teal);text-decoration:none;border-bottom:1px solid var(--teal);">&larr; Back to Simulation Index</a>
+  </div>
+</section>
+
+</div>
+
+<footer>
+  <div class="footer-left">Bailey, B. (2026) &middot; BioStellar LLC &middot; Duvall, WA<br>PLOS Computational Biology &middot; Manuscript PCOMPBIOL-D-26-00775<br>github.com/Belindabailey/molecular-biosphere-framework</div>
+  <div class="footer-right">Supplementary Material S1&ndash;S8</div>
+</footer>
+
+<script>
+// MUSIC PLAYER
+window.addEventListener('load', function() {
+  var audio = document.getElementById('garden-audio');
+  var btn = document.getElementById('music-play-btn');
+  var disc = document.getElementById('music-disc');
+  if (!audio||!btn||!disc) return;
+  function setP(p) { disc.classList.toggle('spinning',p); btn.textContent = p ? '\u25a0 Stop' : '\u25b6 Play'; }
+  audio.addEventListener('ended', function(){ setP(false); });
+  btn.addEventListener('click', function() {
+    if (audio.paused) { audio.play().catch(function(){}); setP(true); }
+    else { audio.pause(); audio.currentTime=0; setP(false); }
+  });
+});
+
+// RESIZE CANVAS HELPER
+function resize(canvas) {
+  var w = canvas.parentElement.clientWidth;
+  canvas.width = w;
+  canvas.height = parseInt(canvas.getAttribute('height'));
+  return {w: canvas.width, h: canvas.height};
+}
+
+// S1: COMPLEXITY REDUCTION
+(function() {
+  var cv = document.getElementById('c-complexity');
+  var ctx = cv.getContext('2d');
+  var dim = resize(cv); var w=dim.w, h=dim.h; var t=0;
+  function draw() {
+    ctx.clearRect(0,0,w,h); ctx.fillStyle='#0a0c10'; ctx.fillRect(0,0,w,h);
+    var now=t*0.008;
+    ctx.strokeStyle='rgba(42,157,126,0.06)'; ctx.lineWidth=0.5;
+    for(var x=0;x<w;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+    for(var y=0;y<h;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+    var lX=w*0.2;
+    for(var i=0;i<160;i++){
+      var s=i*137.5;
+      var px=lX+Math.sin(now*0.7+s)*w*0.15+Math.cos(now*1.1+s*0.3)*w*0.06;
+      var py=h/2+Math.sin(now*0.9+s*0.5)*h*0.32+Math.cos(now*0.6+s*0.7)*h*0.09;
+      ctx.beginPath();ctx.arc(px,py,1.2,0,Math.PI*2);
+      ctx.fillStyle='rgba(196,82,46,'+(0.15+Math.sin(now+s)*0.12)+')';ctx.fill();
+    }
+    ctx.font='bold 24px JetBrains Mono'; ctx.fillStyle='#c4522e'; ctx.textAlign='center';
+    ctx.fillText('10⁵³',lX,h*0.2); // using unicode superscripts
+    ctx.font='10px JetBrains Mono'; ctx.fillStyle='rgba(200,137,42,0.6)';
+    ctx.fillText('BRUTE FORCE',lX,h*0.28); ctx.fillText('ATOMIC TRACKING',lX,h*0.34);
+    var aX1=lX+w*0.11, aX2=w*0.64, aY=h/2;
+    var g=ctx.createLinearGradient(aX1,0,aX2,0);
+    g.addColorStop(0,'rgba(196,82,46,0.8)');g.addColorStop(0.5,'rgba(200,137,42,0.9)');g.addColorStop(1,'rgba(26,107,92,0.8)');
+    ctx.beginPath();ctx.moveTo(aX1,aY);ctx.lineTo(aX2,aY);ctx.strokeStyle=g;ctx.lineWidth=2;ctx.stroke();
+    ctx.beginPath();ctx.moveTo(aX2,aY);ctx.lineTo(aX2-10,aY-5);ctx.lineTo(aX2-10,aY+5);ctx.fillStyle='#1a6b5c';ctx.fill();
+    ctx.font='italic 12px Playfair Display'; ctx.fillStyle='#c8892a'; ctx.textAlign='center';
+    ctx.fillText('atmospheric constraint applied',(aX1+aX2)/2,aY-14);
+    ctx.font='bold 10px JetBrains Mono'; ctx.fillStyle='#e8a83c';
+    ctx.fillText('−10²⁶ REDUCTION',(aX1+aX2)/2,aY+14);
+    var rX=w*0.8;
+    for(var i=0;i<50;i++){
+      var a=(i/50)*Math.PI*2+now*0.25, r=(i%3+1)*h*0.09;
+      var px=rX+Math.cos(a)*r*0.38, py=h/2+Math.sin(a)*r*0.28;
+      ctx.beginPath();ctx.arc(px,py,1.8,0,Math.PI*2);
+      ctx.fillStyle='rgba(92,196,164,'+(0.4+Math.sin(now*2+i*0.5)*0.25)+')';ctx.fill();
+    }
+    ctx.font='bold 24px JetBrains Mono'; ctx.fillStyle='#2a9d7e'; ctx.textAlign='center';
+    ctx.fillText('10¹⁹',rX,h*0.2);
+    ctx.font='10px JetBrains Mono'; ctx.fillStyle='rgba(92,196,164,0.65)';
+    ctx.fillText('ATMOSPHERIC',rX,h*0.28); ctx.fillText('CONSTRAINT',rX,h*0.34);
+    t++; requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize', function(){ dim=resize(cv); w=dim.w; h=dim.h; });
+})();
+
+// S2: ARCHITECTURE
+var archView='flow';
+function setArchView(v){
+  archView=v;
+  document.getElementById('btn-flow').classList.toggle('active',v==='flow');
+  document.getElementById('btn-pulse').classList.toggle('active',v==='pulse');
+}
+(function(){
+  var cv=document.getElementById('c-arch');
+  var ctx=cv.getContext('2d');
+  var dim=resize(cv); var w=dim.w, h=dim.h; var t=0;
+  var sims=[
+    {name:'PHOTON',desc:'Solar radiation',color:'#e8a83c',x:0.5,y:0.1},
+    {name:'THERMO',desc:'Heat transport',color:'#c4522e',x:0.2,y:0.28},
+    {name:'HYDRO',desc:'Water cycle',color:'#2d6fa8',x:0.8,y:0.28},
+    {name:'ATMOS',desc:'O₂/N₂ master',color:'#2a9d7e',x:0.5,y:0.5,core:true},
+    {name:'LITHOS',desc:'Geological',color:'#6b6455',x:0.15,y:0.72},
+    {name:'BIOS',desc:'Living biology',color:'#5cc4a4',x:0.5,y:0.85},
+    {name:'NECROS',desc:'Decomposition',color:'#b8b0a0',x:0.85,y:0.72},
+    {name:'CONSERV',desc:'Validator',color:'#c8892a',x:0.5,y:1.0}
+  ];
+  var edges=[[0,3],[1,3],[2,3],[3,4],[3,5],[3,6],[4,7],[5,7],[6,7],[0,1],[0,2],[1,2]];
+  function draw(){
+    ctx.clearRect(0,0,w,h); ctx.fillStyle='#0a0c10'; ctx.fillRect(0,0,w,h);
+    var now=t*0.012, hS=0.88;
+    for(var ei=0;ei<edges.length;ei++){
+      var a=edges[ei][0], b=edges[ei][1];
+      var sa=sims[a], sb=sims[b];
+      var x1=sa.x*w, y1=sa.y*h*hS+15, x2=sb.x*w, y2=sb.y*h*hS+15;
+      ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);
+      ctx.strokeStyle=archView==='flow'?'rgba(92,196,164,0.12)':'rgba(92,196,164,0.05)';ctx.lineWidth=1;ctx.stroke();
+      if(archView==='pulse'){
+        var pf=((now*0.5+ei*0.23)%1);
+        var px=x1+(x2-x1)*pf, py=y1+(y2-y1)*pf;
+        ctx.beginPath();ctx.arc(px,py,3,0,Math.PI*2);
+        ctx.fillStyle=sa.color;ctx.globalAlpha=0.8;ctx.fill();ctx.globalAlpha=1;
+      }
+    }
+    for(var si=0;si<sims.length;si++){
+      var s=sims[si], x=s.x*w, y=s.y*h*hS+15, r=s.core?34:22;
+      var p=(Math.sin(now*1.5+si*0.8)+1)/2;
+      var grd=ctx.createRadialGradient(x,y,0,x,y,r*2);
+      grd.addColorStop(0,s.color+'33');grd.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.arc(x,y,r*2,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+      ctx.beginPath();ctx.arc(x,y,r+p*2.5,0,Math.PI*2);
+      ctx.strokeStyle=s.color;ctx.lineWidth=s.core?2.5:1.5;ctx.globalAlpha=0.8+p*0.2;ctx.stroke();ctx.globalAlpha=1;
+      ctx.font='bold '+(s.core?'13':'11')+'px JetBrains Mono';ctx.fillStyle=s.color;ctx.textAlign='center';ctx.fillText(s.name,x,y+4);
+      ctx.font='9px JetBrains Mono';ctx.fillStyle='rgba(184,176,160,0.55)';ctx.fillText(s.desc,x,y+r+13);
+    }
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',function(){dim=resize(cv);w=dim.w;h=dim.h;});
+})();
+
+// S3: ATMOSPHERIC O2/N2
+var atmosMode='modern';
+function setAtmosMode(m){
+  atmosMode=m;
+  ['modern','mammoth','ancient'].forEach(function(id){document.getElementById('btn-'+id).classList.toggle('active',id===m);});
+}
+(function(){
+  var cv=document.getElementById('c-atmos');
+  var ctx=cv.getContext('2d');
+  var dim=resize(cv); var w=dim.w, h=dim.h; var t=0;
+  var cfgs={
+    modern:{o2:0.209,n2:0.781,label:'Modern Biosphere — Current Era',color:'#2a9d7e',noise:0.003},
+    mammoth:{o2:0.204,n2:0.786,label:'28,000 BP — Woolly Mammoth Era',color:'#c8892a',noise:0.006},
+    ancient:{o2:0.19,n2:0.79,label:'300,000 BP — Homo heidelbergensis',color:'#c4522e',noise:0.012}
+  };
+  var history=[];
+  function draw(){
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#0a0c10';ctx.fillRect(0,0,w,h);
+    var cfg=cfgs[atmosMode], now=t*0.01;
+    var o2=cfg.o2+Math.sin(now*0.7)*cfg.noise+Math.sin(now*2.3)*cfg.noise*0.4;
+    var n2=cfg.n2-Math.sin(now*0.7)*cfg.noise-Math.sin(now*2.3)*cfg.noise*0.4;
+    history.push({o2:o2,n2:n2});
+    if(history.length>w*0.72)history.shift();
+    var pL=w*0.08,pR=w*0.05,pT=h*0.14,cW=w-pL-pR,cH=h-pT-h*0.15;
+    ctx.strokeStyle='rgba(107,100,85,0.18)';ctx.lineWidth=0.5;
+    for(var i=0;i<=5;i++){var gy=pT+(i/5)*cH;ctx.beginPath();ctx.moveTo(pL,gy);ctx.lineTo(pL+cW,gy);ctx.stroke();}
+    if(history.length>2){
+      ctx.beginPath();
+      for(var i=0;i<history.length;i++){
+        var x=pL+(i/history.length)*cW;
+        var y=pT+cH*(1-(history[i].o2-0.185)/(0.215-0.185)*0.6-0.15);
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle=cfg.color;ctx.lineWidth=2;ctx.globalAlpha=0.9;ctx.stroke();ctx.globalAlpha=1;
+      ctx.beginPath();
+      for(var i=0;i<history.length;i++){
+        var x=pL+(i/history.length)*cW;
+        var y=pT+cH*(0.85-(history[i].n2-0.77)/(0.795-0.77)*0.5);
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle='#2d6fa8';ctx.lineWidth=1.5;ctx.globalAlpha=0.7;ctx.stroke();ctx.globalAlpha=1;
+    }
+    ctx.font='bold 12px JetBrains Mono';ctx.fillStyle=cfg.color;ctx.textAlign='left';
+    ctx.fillText('O₂: '+(o2*100).toFixed(2)+'%',pL,pT-16);
+    ctx.fillStyle='#2d6fa8';ctx.fillText('N₂: '+(n2*100).toFixed(2)+'%',pL+115,pT-16);
+    ctx.font='9px JetBrains Mono';ctx.fillStyle='rgba(184,176,160,0.55)';ctx.textAlign='right';
+    ctx.fillText(cfg.label,w-pR,pT-16);
+    var cY=pT+cH*0.36;
+    ctx.strokeStyle='rgba(92,196,164,0.25)';ctx.lineWidth=1;ctx.setLineDash([4,6]);
+    ctx.beginPath();ctx.moveTo(pL,cY);ctx.lineTo(pL+cW,cY);ctx.stroke();ctx.setLineDash([]);
+    ctx.font='9px JetBrains Mono';ctx.fillStyle='rgba(92,196,164,0.45)';ctx.textAlign='right';
+    ctx.fillText('biological constraint threshold',pL+cW,cY-4);
+    t++;requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',function(){dim=resize(cv);w=dim.w;h=dim.h;});
+})();
+
+// S8: MAMMOTH RECONSTRUCTION
+var mammothT=0, mammothRunning=false;
+var mammothPhases=[
+  'Phase 1: Loading Siberian permafrost ice core atmospheric data (NOAA archives)...',
+  'Phase 2: Integrating O₂/N₂ constraint validation — ATMOS simulator active...',
+  'Phase 3: Environmental DNA cross-referencing — BIOS simulator online...',
+  'Phase 4: Brownian trajectory probability field generation — escape patterns applied...',
+  'Phase 5: NECROS decomposition pathway modeling — 28,000 year decay accounting...',
+  'Phase 6: Molecular cluster convergence — identity reconstruction crystallizing...',
+  'Phase 7: Fidelity validation complete — 96% ± 8% confidence achieved.'
+];
+function resetMammoth(){mammothT=0;mammothRunning=true;}
+(function(){
+  var cv=document.getElementById('c-mammoth');
+  var ctx=cv.getContext('2d');
+  var dim=resize(cv); var w=dim.w, h=dim.h;
+  function draw(){
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#0a0c10';ctx.fillRect(0,0,w,h);
+    var now=mammothT*0.008, total=600, progress=Math.min(mammothT/total,1);
+    var phase=Math.min(Math.floor(progress*mammothPhases.length),mammothPhases.length-1);
+    if(mammothRunning)document.getElementById('mammoth-phase-label').textContent=mammothPhases[phase];
+    for(var i=0;i<8;i++){
+      var gy=(h*(i+1))/9, a=0.04+progress*0.06;
+      ctx.strokeStyle=i%2===0?'rgba(42,157,126,'+a+')':'rgba(45,111,168,'+a+')';ctx.lineWidth=1;
+      ctx.beginPath();
+      for(var x=0;x<w;x+=3){var sy=gy+Math.sin(x*0.05+now*(i%3+1)*0.5)*8;x===0?ctx.moveTo(x,sy):ctx.lineTo(x,sy);}
+      ctx.stroke();
+    }
+    var cx=w*0.48, cy=h*0.47, maxR=Math.min(w,h)*0.3;
+    for(var ring=8;ring>=0;ring--){
+      var rP=Math.max(0,progress*10-ring*0.8), r=maxR*(1-ring/10)*Math.min(rP,1);
+      if(r<=0)continue;
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
+      ctx.strokeStyle=ring%2===0?'rgba(42,157,126,'+(0.06+rP*0.08)+')':'rgba(200,137,42,'+(0.05+rP*0.06)+')';
+      ctx.lineWidth=1.5;ctx.stroke();
+    }
+    var pCount=Math.floor(progress*110);
+    for(var i=0;i<pCount;i++){
+      var seed=i*47.3, angle=seed%(Math.PI*2);
+      var dist=Math.max(0,(1-progress)*maxR*1.4+Math.sin(now+seed)*18);
+      var px=cx+Math.cos(angle)*dist, py=cy+Math.sin(angle)*dist*0.6;
+      var alpha=0.25+(progress-dist/maxR/2)*0.45;
+      ctx.beginPath();ctx.arc(px,py,1.5,0,Math.PI*2);
+      ctx.fillStyle=progress>0.65?'rgba(92,196,164,'+alpha+')':'hsla('+((i*137)%360)+',60%,60%,'+(alpha*0.45)+')';ctx.fill();
+    }
+    if(progress>0.5){
+      var cA=(progress-0.5)*2, cR=maxR*0.18*cA;
+      var grd=ctx.createRadialGradient(cx,cy,0,cx,cy,cR);
+      grd.addColorStop(0,'rgba(92,196,164,0.4)');grd.addColorStop(0.5,'rgba(42,157,126,0.18)');grd.addColorStop(1,'transparent');
+      ctx.beginPath();ctx.arc(cx,cy,cR,0,Math.PI*2);ctx.fillStyle=grd;ctx.fill();
+    }
+    var mX=w*0.8, mY=h*0.16, mH=h*0.58, fid=0.96*progress;
+    ctx.strokeStyle='rgba(107,100,85,0.35)';ctx.lineWidth=1;ctx.strokeRect(mX-13,mY,26,mH);
+    var fH=mH*fid;
+    var fg=ctx.createLinearGradient(0,mY+mH,0,mY+mH-fH);
+    fg.addColorStop(0,'rgba(42,157,126,0.85)');fg.addColorStop(1,'rgba(92,196,164,0.4)');
+    ctx.fillStyle=fg;ctx.fillRect(mX-12,mY+mH-fH,24,fH);
+    ctx.font='bold 14px JetBrains Mono';ctx.fillStyle='#2a9d7e';ctx.textAlign='center';
+    ctx.fillText(Math.round(fid*100)+'%',mX,mY+mH+20);
+    ctx.font='8px JetBrains Mono';ctx.fillStyle='rgba(184,176,160,0.55)';ctx.fillText('FIDELITY',mX,mY+mH+31);
+    ctx.font='9px JetBrains Mono';ctx.fillStyle='rgba(200,137,42,0.55)';ctx.textAlign='left';
+    ctx.fillText('Atmospheric integration: '+Math.round(progress*28000).toLocaleString()+' BP',14,18);
+    ctx.fillText('Constraint validators: '+Math.round(progress*8)+'/8 active',14,30);
+    if(mammothRunning&&progress<1)mammothT++;
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',function(){dim=resize(cv);w=dim.w;h=dim.h;});
+})();
+
+// FIDELITY BARS
+function animateBars(){
+  document.querySelectorAll('.fidelity-fill').forEach(function(el){el.style.width=el.dataset.w+'%';});
+}
+
+// SCROLL REVEAL
+var revObs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      if(e.target.id==='fig7')animateBars();
+      if(e.target.id==='fig8'&&!mammothRunning)resetMammoth();
+    }
+  });
+},{threshold:0.08});
+document.querySelectorAll('.figure-section').forEach(function(s){revObs.observe(s);});
+</script>
+</body>
+</html>
